@@ -77,6 +77,7 @@ def model(
         gif_compress    = True,        # Compress the size of the animation
         date_submap     = True,        # Set True to create extra date submaps
         date_subname    = True,        # Set True to add a date in the filename
+         check          = True,        # No double downloads check
         verbose         = True         # Overwrite verbose -> see config.py
     ):
     '''Function creates and saves a gif animation based on weather model output
@@ -107,7 +108,7 @@ def model(
         uries = [util.mk_path(url, n) for n in names] # Create download web url list
 
         # Download all images from an uries list
-        uries, paths = fio.download_lst(uries, paths, True, verbose)
+        uries, paths = fio.download_lst(uries, paths, check, verbose)
 
         # Animation map
         if date_submap: # Update animation map with dates
@@ -142,7 +143,7 @@ def model(
     return ok, path
 
 
-def download_model( weather_types, # List of weathertypes -> overview, tmep2meter
+def download_model( types, # List of weathertypes -> overview, tmep2meter
                     areas,         # List of areas
                     name,          # Name of model
                     yyyymmdd,          # Date of model run
@@ -153,7 +154,7 @@ def download_model( weather_types, # List of weathertypes -> overview, tmep2mete
     ):
     '''Function downloads from optoins lists with weather types and areas all
        the models run'''
-    for option in weather_types: # Which type weather images
+    for option in types: # Which type weather images
         for area in areas: # Which areas
             model( name=name, option=option, area=area, run=run, yyyymmdd=yyyymmdd,
                    start_time=start_time, step_time=step_time, end_time=end_time )
@@ -162,29 +163,29 @@ def download_model_icon_eu(yyyymmdd, run):
     '''Function downloads model icon with several options'''
     wtypes = [overview, temp2meter, snowdepth] # ,sum_precip, wind10m, hPa850, winterview, snowdepth
     areas  = [europe, benelux]
-    download_model( weather_types=wtypes, areas=areas, name=icon_eu, yyyymmdd=yyyymmdd,
+    download_model( types=wtypes, areas=areas, name=icon_eu, yyyymmdd=yyyymmdd,
                     run=run, start_time=0, step_time=3, end_time=60 )
-    download_model( weather_types=wtypes, areas=areas, name=icon_eu, yyyymmdd=yyyymmdd,
+    download_model( types=wtypes, areas=areas, name=icon_eu, yyyymmdd=yyyymmdd,
                     run=run, start_time=60, step_time=3, end_time=120 )
 
 def download_model_gfs(yyyymmdd, run):
     '''Function downloads model gfs with several options'''
     wtypes = [overview, temp2meter, snowdepth] #, sum_precip, wind10m, hPa850, winterview, snowdepth
     areas  = [europe_atlantic, benelux] # europe
-    download_model( weather_types=wtypes, areas=areas, name=gfs, yyyymmdd=yyyymmdd,
+    download_model( types=wtypes, areas=areas, name=gfs, yyyymmdd=yyyymmdd,
                     run=run, start_time=0, step_time=6, end_time=120 )
-    download_model( weather_types=wtypes, areas=areas, name=gfs, yyyymmdd=yyyymmdd,
+    download_model( types=wtypes, areas=areas, name=gfs, yyyymmdd=yyyymmdd,
                     run=run, start_time=120, step_time=6, end_time=240 )
-    download_model( weather_types=wtypes, areas=areas, name=gfs, yyyymmdd=yyyymmdd,
+    download_model( types=wtypes, areas=areas, name=gfs, yyyymmdd=yyyymmdd,
                     run=run, start_time=240, step_time=6, end_time=360 )
 
 def download_model_ec(yyyymmdd, run):
     '''Function downloads model ecmwf with seceral options'''
     wtypes = [overview, temp2meter, snowdepth] #, sum_precip, wind10m, hPa850 , winterview, snowdepth
     areas  = [europe_atlantic, benelux] # europe,
-    download_model( weather_types=wtypes, areas=areas, name=ecmwf, yyyymmdd=yyyymmdd,
+    download_model( types=wtypes, areas=areas, name=ecmwf, yyyymmdd=yyyymmdd,
                     run=run, start_time=0, step_time=6, end_time=120 )
-    download_model( weather_types=wtypes, areas=areas, name=ecmwf, yyyymmdd=yyyymmdd,
+    download_model( types=wtypes, areas=areas, name=ecmwf, yyyymmdd=yyyymmdd,
                     run=run, start_time=120, step_time=6, end_time=240 )
 
 def download_daily():
@@ -220,7 +221,11 @@ def download_daily():
 
 
 if __name__ == "__main__":
-    ''' WXCHARTS EXAMPLES '''
+    # # Update download and animation dir for webserver
+    # dir_www = os.path.abspath('/var/www/html/weather/images')
+    # cfg.dir_download  = util.mk_path(dir_www, 'download')
+    # cfg.dir_animation = util.mk_path(dir_www, 'animation')
+
     # EXAMPLE MODEL
     model(
         name            = 'gfs',       # Options model: gfs, gefs, ukmo, ecmwf, icon_eu, gdps, ARPEGE, GEM
@@ -229,7 +234,7 @@ if __name__ == "__main__":
         yyyymmdd        = '20211117',  # Date of run format: yyyymmdd
         run             = '12',        # Options time: 00, 06, 12, 18
         start_time      = 0,           # Start image
-        step_time       = 6,           # Step image
+        step_time       = 1,           # Step image
         end_time        = 384,         # End image
         animation_time  = 0.7,         # Animation interval time for gif animation
         download_map    = cfg.dir_download,  # Map for downloading the images too
@@ -238,11 +243,18 @@ if __name__ == "__main__":
         gif_compress    = True,        # Compress the size of the animation
         date_submap     = True,        # Set True to create extra date submaps
         date_subname    = True,        # Set True to add date in filename
+        check           = True,        # No double downloads check
         verbose         = True         # Overwrite verbose -> see config.py
     )
 
-    # model( icon_eu, overview,   europe,  anim.yyyymmdd_now(), '12', 0, 3, 120 )
-    # model( icon_eu, temp2meter, benelux, anim.yyyymmdd_now(), '12', 0, 3, 120 )
+    dnow = anim.yyyymmdd_now()
+    run = '12'
+    model( icon_eu, overview, europe,  dnow, run,   0, 1,  60, 0.7 )
+    model( icon_eu, overview, europe,  dnow, run,  60, 1, 120, 0.7 )
+    # model( icon_eu, temp2meter, benelux, dnow, run,   0, 1, 120, 0.7 )
+    # snowdepth
+
+
 
     ############################################################################
     # Example daily repeating download_

@@ -19,7 +19,7 @@ import common.view.console as cnsl
 import common.view.txt as txt
 import common.control.fio as fio
 import common.control.ask as ask
-import threading, time # Multi processing and time
+import os, threading, time # Multi processing and time
 
 # Base url model images
 base_url  = 'https://www.wetterzentrale.de/maps'
@@ -104,7 +104,7 @@ def model(
     cnsl.log(f'Start {web_name} animation {ymd.now()}', verbose)
 
     # Get image nam and num (for url)
-    num, weather_type = options( option )
+    num, typ = options( option )
     if num: # Check if num exists
         cnsl.log(f'Model name is {name}', verbose)
         cnsl.log(f'Area {area} | Option {option} | Member {member} | Run {run}', verbose)
@@ -121,7 +121,7 @@ def model(
         # Create local images paths and correct web uries list based on selected model
         # and selected frames times. Url eg: https://www.wetterzentrale.de/maps/GFSOPEU18_0_1.png
         urie   = f'{name}{member}{area}{run}'.upper() # String for model options. ie GFSOPEU12
-        fname  = f'{web_name}_{name}_{area}_{weather_type}_{member}_{run}' # Base file name
+        fname  = f'{web_name}_{name}_{area}_{option}_{member}_{run}' # Base file name
         ext    = validate.extension( image_ext ) # Handle dot. Add one if . not exists
         times  = range(start_time, end_time+1, step_time) # List times for images
         unames = [f'{urie}_{tms}_{num}{ext}' for tms in times] # Create list with image names for uries
@@ -139,7 +139,7 @@ def model(
         animation_map = util.mk_path(animation_map, sub_map)
 
         # Animation file
-        fname = f'{web_name}_{name}_{area}_{member}_{run}_{start_time:0>3}-{end_time:0>3}'
+        fname = f'{web_name}_{name}_{area}_{option}_{member}_{run}_{start_time:0>3}-{end_time:0>3}'
         if date_submap: # Add date to file name
             y, m, d, hh, mm, ss = ymd.y_m_d_h_m_s_now()
             fname = f'{fname}_{y}-{m}-{d}_{hh}-{mm}-{ss}'
@@ -214,6 +214,10 @@ def daily_processes():
 
 # nohup command >/dev/null 2>&1
 if __name__ == "__main__":
+    # # Update download and animation dir for webserver
+    # dir_www = os.path.abspath('/var/www/html/weather/images')
+    # cfg.dir_download  = util.mk_path(dir_www, 'download')
+    # cfg.dir_animation = util.mk_path(dir_www, 'animation')
 
     # model(
     #     name             = gfs,    # Options for which model: GFS,ECM,WRF,ICO, HAR40,ARPEGE, GEM
@@ -235,14 +239,15 @@ if __name__ == "__main__":
     #     verbose          = True  # With output to screen
     # )
 
-    run, dm, am, iv = '12', cfg.dir_download, cfg.dir_animation, 0.7 # Base maps (shortened)
-    rm, cp, ds, dn, ck, vb = False, True, True, True, True, True
-    model( gfs, 'hpa500',     'OP', 'EU', run,   0, 1, 192, iv, dm, am, rm, cp, ds, dn, ck, vb )
-    model( gfs, 'hpa500',     'OP', 'EU', run, 192, 1, 384, iv, dm, am, rm, cp, ds, dn, ck, vb )
-    model( gfs, 'temp2meter', 'OP', 'ME', run,   0, 1, 192, iv, dm, am, rm, cp, ds, dn, ck, vb )
-    model( gfs, 'temp2meter', 'OP', 'ME', run, 192, 1, 384, iv, dm, am, rm, cp, ds, dn, ck, vb )
-    model( gfs, 'snow_cover', 'OP', 'ME', run,   0, 1, 192, iv, dm, am, rm, cp, ds, dn, ck, vb )
-    model( gfs, 'snow_cover', 'OP', 'ME', run, 192, 1, 384, iv, dm, am, rm, cp, ds, dn, ck, vb )
+    run, dm, am = '12', cfg.dir_download, cfg.dir_animation # Base maps (shortened)
+    iv, rm, cp, ds, dn, ck, vb = 0.7, False, True, True, True, True, True
+    model( gfs, 'hpa500',     'OP', 'EU', run,   0, 1,  96, iv, dm, am, rm, cp, ds, dn, ck, vb )
+    model( gfs, 'hpa500',     'OP', 'EU', run,  96, 1, 192, iv, dm, am, rm, cp, ds, dn, ck, vb )
+    model( gfs, 'hpa500',     'OP', 'EU', run, 192, 3, 384, iv, dm, am, rm, cp, ds, dn, ck, vb )
+    model( gfs, 'temp2meter', 'OP', 'ME', run,   0, 1, 144, 0.5, dm, am, rm, cp, ds, dn, ck, vb )
+    model( gfs, 'temp2meter', 'OP', 'ME', run, 144, 1, 384, 0.5, dm, am, rm, cp, ds, dn, ck, vb )
+    model( gfs, 'snow_cover', 'OP', 'ME', run,   0, 1, 384, 0.4, dm, am, rm, cp, ds, dn, ck, vb )
+    # model( gfs, 'snow_cover', 'OP', 'ME', run, 192, 1, 384, 0.5, dm, am, rm, cp, ds, dn, ck, vb )
 
     ############################################################################
     # Examples model animations

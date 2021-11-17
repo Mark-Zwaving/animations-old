@@ -4,21 +4,26 @@
 __author__     =  'Mark Zwaving'
 __email__      =  'markzwaving@gmail.com'
 __copyright__  =  'Copyright (C) Mark Zwaving. All rights reserved.'
-__license__    =  'GNU Lesser General Public License (LGPL)'
-__version__    =  '0.1.1'
+__license__    =  'MIT License'
+__version__    =  '0.1.2'
 __maintainer__ =  'Mark Zwaving'
 __status__     =  'Development'
 # Python version > 3.7 (fstring)
 
-import config as cfg # Configuration defaults. See config.py
-import sources.anim as anim  # import animation library
+import common.config as cfg # Configuration defaults. See config.py
+import common.model.animation as anim  # import animation library
+import common.model.util as util
+import common.model.validate as validate
+import common.model.ymd as ymd
+import common.view.console as cnsl
+import common.control.fio as fio
+import common.control.ask as ask
 import threading, time # Multi processing and time
 
-## Init vars wxcharts.com
-# Name wxcharts.com
-name_wx = 'wxcharts'
-# https://wxcharts.com/charts/ecmwf/nweurope/charts/overview_20211018_00_090.jpg?
-base_url  = 'http://wxcharts.com/charts/' # http will work, is oke
+# Init vars wxcharts.com
+# http://wxcharts.com/charts/ecmwf/nweurope/charts/overview_20211018_00_090.jpg
+# http://wxcharts.com/charts/gfs/euratl/charts/snowdepth_20211116_12_000.jpg?
+base_url  = 'http://wxcharts.com/charts' # http will work
 image_ext = 'jpg' # Image extension for download images
 
 # Default model options wxcharts.com
@@ -31,9 +36,6 @@ icon_eu = 'icon_eu'
 gdps    = 'gdps'
 arpege  = 'ARPEGE'
 gem     = 'GEM'
-
-# Which weather model # Options for name: GFS, ECM2
-name    = gfs
 
 # Weather cards options
 overview   = 'overview'
@@ -54,77 +56,96 @@ europe           = 'europe'
 germany          = 'germany'
 benelux          = 'low_countries'
 
-# Options for area
-area          = europe_atlantic
-option        = overview
-run           = '00' # EXE TIMES times for execution runs of models
-start_time    = 0    # START     time of first calculation (image)
-step_time = 6    # INTERVAL  times in between (images)
-end_time      = 240  # END  end  Stime of last calculation (immage)
+# Date today
+ymd_now = ymd.yyyymmdd_now()
 
-## WXCHARTS specific fn
+# WXCHARTS specific fn
 # Main wxcharts function wrapper what makes animations from wxcharts.com images
 def model(
-        name            = name,    # Which weather model
-        option          = option,  # Option output temp, overview
-        area            = area,    # Options for area eg. euratl europe france germany low_countries
-        date            = '',      # Date of run format yyyymmdd
-        run             = run,     # Options for time eg. 00, 06, 12, 18
-        start_time      = start_time,  # Start image
-        step_time       = step_time,   # Step images
-        end_time        = end_time,    # End image
-        animation_time  = cfg.animation_time,  # Animation interval time for gif animation
-        download_map    = cfg.download_dir,    # Map for downloading the images too
-        animation_map   = cfg.animation_dir,   # Map for the animations
-        remove_download = cfg.remove_download, # Remove the downloaded images
-        gif_compress    = cfg.gif_compress,    # Compress the size of the animation
-        date_submap     = cfg.date_submap,     # Set True to create extra date submaps
-        date_subname    = cfg.date_subname,    # Set True to create extra date in files
+        name            = 'gfs',       # Options model: gfs, gefs, ukmo, ecmwf, icon_eu, gdps, ARPEGE, GEM
+        option          = 'snowdepth', # Options type: overview, winteroverview, 850temp, 2mtemp, snowdepth, wind10mkph, accprecip
+        area            = 'euratl',    # Options for area eg. euratl europe france germany low_countries
+        yyyymmdd        = ymd_now, # Date of run format: yyyymmdd
+        run             = '12',        # Options time: 00, 06, 12, 18
+        start_time      = 0,           # Start image
+        step_time       = 3,           # Step image
+        end_time        = 384,         # End image
+        animation_time  = 0.7,         # Animation interval time for gif animation
+        download_map    = cfg.dir_download,  # Map for downloading the images too
+        animation_map   = cfg.dir_animation, # Map for the animations
+        remove_download = False,       # Remove the downloaded images
+        gif_compress    = True,        # Compress the size of the animation
+        date_submap     = True,        # Set True to create extra date submaps
+        date_subname    = True,        # Set True to add a date in the filename
+        verbose         = True         # Overwrite verbose -> see config.py
     ):
     '''Function creates and saves a gif animation based on weather model output
        type and time options. Data is from wxcharts.com'''
-    anim.log('Start make wxcharts animation', True)
-    anim.log(f'Model is {name} | Option is {option} | Area is {area}', True)
-    anim.log(f'Run is {run} with images from {start_time} to {end_time} with a step of {step_time}', True)
+    ok, path, verbose = False, '', cnsl.verbose(verbose)
+    web_name = util.url_name(base_url)
+    cnsl.log(f'Start {web_name} animation {ymd.now()}', verbose)
+    cnsl.log(f'Model is {name} | Option is {option} | Area is {area} | Date is {yyyymmdd}', verbose)
+    cnsl.log(f'Run is {run} with images from {start_time} to {end_time} with a step of {step_time}', verbose)
 
-    # Make a download map
-    download_map = anim.handle_map(name_wx, name, download_map, date_submap)
+    if validate.yyyymmdd(yyyymmdd, verbose):
+        # Extra map specific for this run and model
+        sub_map = f'{web_name}/{name}/{run}'.lower()
 
-    # Make the paths and uries for downloading the model images
-    url   = f'{base_url}{name}/{area}/charts/' # Base url first part
-    base  = f'{option}_{anim.validate_yyyymmdd(date)}_{run}' #
-    ext   = anim.validate_extension( image_ext ) # Handle dot. Add one if . not exists
-    times = range(start_time, end_time+1, step_time) # List times for images
-    names = [f'{base}_{anim.leading_zero(tms,3)}{ext}' for tms in times] # Create list with image names
-    paths = [anim.mk_path(download_map, f'{name}_{area}_{n}') for n in names] # Create full paths lst
-    uries = [anim.mk_path(url, n) for n in names] # Create download web url list
+        # Make download path
+        if date_submap: # Update download map
+            y, m, d, hh, mm, ss = ymd.y_m_d_h_m_s_now()
+            download_map = util.mk_path(download_map, f'{y}/{m}/{d}')
+        download_map = util.mk_path(download_map, sub_map)
 
-    # Download all images from an uries list
-    uries, paths = anim.download_list(uries, paths)
+        # Make the paths and uries for downloading the model images
+        url   = f'{base_url}/{name}/{area}/charts/' # Base url first part
+        base  = f'{option}_{yyyymmdd}_{run}' #
+        ext   = validate.extension( image_ext ) # Handle dot. Add one if . not exists
+        times = range(start_time, end_time+1, step_time) # List times for images
+        names = [f'{base}_{ts:0>3}{ext}' for ts in times] # Create list with image names
+        paths = [util.mk_path(download_map, f'{web_name}_{name}_{area}_{n}') for n in names] # Create full paths lst
+        uries = [util.mk_path(url, n) for n in names] # Create download web url list
 
-    # Make path animation file
-    fname = f'{name}_{area}_{base}_{start_time}-{end_time}' # Base animation file name    # Make a download map
-    animation_map = anim.handle_map(name_wx, name, animation_map, date_submap)
-    fpath = anim.mk_file_path(animation_map, fname, cfg.animation_ext, date_subname) # Make filename
+        # Download all images from an uries list
+        uries, paths = fio.download_lst(uries, paths, True, verbose)
 
-    # Create animation file
-    ok = anim.create(fpath, paths, animation_time)
+        # Animation map
+        if date_submap: # Update animation map with dates
+            y, m, d, hh, mm, ss = ymd.y_m_d_h_m_s_now()
+            animation_map = util.mk_path(animation_map, f'{y}/{m}/{d}')
+        animation_map = util.mk_path(animation_map, sub_map)
 
-    # Compress animation
-    if ok and gif_compress:
-        anim.compress_gif(fpath)
+        # Animation file
+        fname = f'{web_name}_{name}_{area}_{option}_{run}_{start_time:0>3}-{end_time:0>3}'
+        if date_submap: # Add date to file name
+            y, m, d, hh, mm, ss = ymd.y_m_d_h_m_s_now()
+            fname = f'{fname}_{y}-{m}-{d}_{hh}-{mm}-{ss}'
 
-    # Remove downloaded images
-    if remove_download:
-        anim.remove_files_in_list(paths)
+        # Animation path
+        path = util.mk_path( animation_map, f'{fname}.gif'.lower() )
 
-    anim.log('End wxcharts animation\n', True)
+        # Create animation file
+        ok = anim.create(paths, path, animation_time, verbose)
+
+        # Compress animation
+        if ok and gif_compress: util.compress_gif(path, verbose)
+
+        # Remove downloaded images
+        if remove_download: fio.rm_lst(paths)
+
+        # Open file with a default app
+        # ask.open_with_app(path)
+    else:
+        cnsl.log(f'Error in date {yyyymmdd}', cfg.error)
+
+    cnsl.log(f'End {web_name} animation', verbose)
+    return ok, path
 
 
 def download_model( weather_types, # List of weathertypes -> overview, tmep2meter
                     areas,         # List of areas
                     name,          # Name of model
-                    date,          # Date of model run
+                    yyyymmdd,          # Date of model run
                     run,           # Time of model run
                     start_time,    # Start time of run
                     step_time,     # Interval time of run
@@ -134,57 +155,37 @@ def download_model( weather_types, # List of weathertypes -> overview, tmep2mete
        the models run'''
     for option in weather_types: # Which type weather images
         for area in areas: # Which areas
-            model( name=name, option=option, area=area, run=run, date=date,
+            model( name=name, option=option, area=area, run=run, yyyymmdd=yyyymmdd,
                    start_time=start_time, step_time=step_time, end_time=end_time )
 
-
-def download_model_icon_eu(date, run):
+def download_model_icon_eu(yyyymmdd, run):
     '''Function downloads model icon with several options'''
-    wtypes = [overview, temp2meter] # ,sum_precip, wind10m, hPa850, winterview, snowdepth
+    wtypes = [overview, temp2meter, snowdepth] # ,sum_precip, wind10m, hPa850, winterview, snowdepth
     areas  = [europe, benelux]
-    end_time = 120 if run in ['06','18'] else 180
-    download_model( weather_types=wtypes, areas=areas, name=icon_eu, date=date,
-                    run=run, start_time=0, step_time=3, end_time=end_time )
-
-    # Make extra animations
-    download_model( weather_types=wtypes, areas=areas, name=icon_eu, date=date,
+    download_model( weather_types=wtypes, areas=areas, name=icon_eu, yyyymmdd=yyyymmdd,
                     run=run, start_time=0, step_time=3, end_time=60 )
-    download_model( weather_types=wtypes, areas=areas, name=icon_eu, date=date,
+    download_model( weather_types=wtypes, areas=areas, name=icon_eu, yyyymmdd=yyyymmdd,
                     run=run, start_time=60, step_time=3, end_time=120 )
-    if run in ['00','12']:
-        download_model( weather_types=wtypes, areas=areas, name=icon_eu, date=date,
-                        run=run, start_time=120, step_time=3, end_time=180 )
 
-
-def download_model_gfs(date, run):
+def download_model_gfs(yyyymmdd, run):
     '''Function downloads model gfs with several options'''
-    wtypes = [overview, temp2meter] #, sum_precip, wind10m, hPa850, winterview, snowdepth
+    wtypes = [overview, temp2meter, snowdepth] #, sum_precip, wind10m, hPa850, winterview, snowdepth
     areas  = [europe_atlantic, benelux] # europe
-
-    download_model( weather_types=wtypes, areas=areas, name=gfs, date=date,
-                    run=run, start_time=0, step_time=6, end_time=288 )
-    # Make extra animations
-    download_model( weather_types=wtypes, areas=areas, name=gfs, date=date,
+    download_model( weather_types=wtypes, areas=areas, name=gfs, yyyymmdd=yyyymmdd,
                     run=run, start_time=0, step_time=6, end_time=120 )
-    download_model( weather_types=wtypes, areas=areas, name=gfs, date=date,
+    download_model( weather_types=wtypes, areas=areas, name=gfs, yyyymmdd=yyyymmdd,
                     run=run, start_time=120, step_time=6, end_time=240 )
-    download_model( weather_types=wtypes, areas=areas, name=gfs, date=date,
-                    run=run, start_time=240, step_time=6, end_time=384 )
+    download_model( weather_types=wtypes, areas=areas, name=gfs, yyyymmdd=yyyymmdd,
+                    run=run, start_time=240, step_time=6, end_time=360 )
 
-
-def download_model_ec(date, run):
+def download_model_ec(yyyymmdd, run):
     '''Function downloads model ecmwf with seceral options'''
-    wtypes = [overview, temp2meter] #, sum_precip, wind10m, hPa850 , winterview, snowdepth
+    wtypes = [overview, temp2meter, snowdepth] #, sum_precip, wind10m, hPa850 , winterview, snowdepth
     areas  = [europe_atlantic, benelux] # europe,
-
-    download_model( weather_types=wtypes, areas=areas, name=ecmwf, date=date,
-                    run=run, start_time=0, step_time=6, end_time=240 )
-    # Make extra animations
-    download_model( weather_types=wtypes, areas=areas, name=ecmwf, date=date,
+    download_model( weather_types=wtypes, areas=areas, name=ecmwf, yyyymmdd=yyyymmdd,
                     run=run, start_time=0, step_time=6, end_time=120 )
-    download_model( weather_types=wtypes, areas=areas, name=ecmwf, date=date,
+    download_model( weather_types=wtypes, areas=areas, name=ecmwf, yyyymmdd=yyyymmdd,
                     run=run, start_time=120, step_time=6, end_time=240 )
-
 
 def download_daily():
     '''Function downloads daily several models at different times'''
@@ -196,49 +197,49 @@ def download_daily():
                             '18': '00:00:00'
                             }.items():
             # Make download model times
-            gfs_time = anim.hh_mm_ss_add_hour(stime, 2) # Add two hours
-            ecm_time = anim.hh_mm_ss_add_hour(stime, 3) # Add three hours
+            gfs_time = ymd.hh_mm_ss_plus_hour(stime, 2) # Add two hours
+            ecm_time = ymd.hh_mm_ss_plus_hour(stime, 3) # Add three hours
 
             # Get dates
-            wait_date, model_date = anim.yyyymmdd_now(), anim.yyyymmdd_now()
+            wait_date = model_date = ymd.yyyymmdd_now()
             # For the 18 hour we need to wait for the next day
-            if run == '18': wait_date = anim.yyyymmdd_next_day()
+            if run == '18': wait_date = ymd.yyyymmdd_next_day()
 
             # ICON, first
-            anim.pause( stime, wait_date, f'download model run {run} ICON at' )
+            util.pause( stime, wait_date, f'download model run {run} ICON at' )
             download_model_icon_eu(model_date, run)
 
             # GFS, one hour later
-            anim.pause( gfs_time, wait_date, f'download model run {run} GFS at' )
+            util.pause( gfs_time, wait_date, f'download model run {run} GFS at' )
             download_model_gfs(model_date, run)
 
             # ECMWF, only 00 and 12 run and three hours later
             if run in ['00','12']:
-                anim.pause( ecm_time, wait_date, f'download model run {run} ECMWF at' )
+                util.pause( ecm_time, wait_date, f'download model run {run} ECMWF at' )
                 download_model_ec(model_date, run)
 
 
 if __name__ == "__main__":
-    '''
-    # WXCHARTS EXAMPLES
-    '''
-    # EXAMPLE ECMWF
-    # model(  name            = ecmwf,               # Which weather model
-    #         option          = overview,            # Option output temp, overview
-    #         area            = europe_atlantic,     # Options for area eg. euratl europe france germany low_countries
-    #         date            = anim.yyyymmdd_now(), # Date of run format yyyymmdd
-    #         run             = '00',                # Options for time eg. 00, 06, 12, 18
-    #         start_time      = 0,                   # Start image
-    #         step_time       = 24,                  # Step time between images
-    #         end_time        = 240,                 # End image
-    #         animation_time  = cfg.animation_time,  # Animation interval time for gif animation
-    #         download_map    = cfg.download_dir,    # Map for downloading the images too
-    #         animation_map   = cfg.animation_dir,   # Map for the animations
-    #         remove_download = cfg.remove_download, # Remove the downloaded images
-    #         gif_compress    = cfg.gif_compress,    # Compress the size of the animation
-    #         date_submap     = cfg.date_submap,     # Set True to create extra date submaps
-    #         date_subname    = cfg.date_subname,    # Set True to create extra date in files
-    # )
+    ''' WXCHARTS EXAMPLES '''
+    # EXAMPLE MODEL
+    model(
+        name            = 'gfs',       # Options model: gfs, gefs, ukmo, ecmwf, icon_eu, gdps, ARPEGE, GEM
+        option          = 'snowdepth', # Options type: overview, winteroverview, 850temp, 2mtemp, snowdepth, wind10mkph, accprecip
+        area            = 'euratl',    # Options for area eg. euratl europe france germany low_countries
+        yyyymmdd        = '20211117',  # Date of run format: yyyymmdd
+        run             = '12',        # Options time: 00, 06, 12, 18
+        start_time      = 0,           # Start image
+        step_time       = 6,           # Step image
+        end_time        = 384,         # End image
+        animation_time  = 0.7,         # Animation interval time for gif animation
+        download_map    = cfg.dir_download,  # Map for downloading the images too
+        animation_map   = cfg.dir_animation, # Map for the animations
+        remove_download = False,       # Remove the downloaded images
+        gif_compress    = True,        # Compress the size of the animation
+        date_submap     = True,        # Set True to create extra date submaps
+        date_subname    = True,        # Set True to add date in filename
+        verbose         = True         # Overwrite verbose -> see config.py
+    )
 
     # model( icon_eu, overview,   europe,  anim.yyyymmdd_now(), '12', 0, 3, 120 )
     # model( icon_eu, temp2meter, benelux, anim.yyyymmdd_now(), '12', 0, 3, 120 )
@@ -246,5 +247,6 @@ if __name__ == "__main__":
     ############################################################################
     # Example daily repeating download_
     # Download everyday the same run at the same time
+    # download_daily()
 
-    download_daily()
+    util.app_time()

@@ -227,34 +227,35 @@ if __name__ == "__main__":
     # cfg.dir_animation = util.mk_path(dir_www, 'animation')
 
     # EXAMPLE MODEL
-    model(
-        name            = 'gfs',       # Options model: gfs, gefs, ukmo, ecmwf, icon_eu, gdps, ARPEGE, GEM
-        option          = 'snowdepth', # Options type: overview, winteroverview, 850temp, 2mtemp, snowdepth, wind10mkph, accprecip
-        area            = 'euratl',    # Options for area eg. euratl europe france germany low_countries
-        yyyymmdd        = '20211117',  # Date of run format: yyyymmdd
-        run             = '12',        # Options time: 00, 06, 12, 18
-        start_time      = 0,           # Start image
-        step_time       = 1,           # Step image
-        end_time        = 384,         # End image
-        animation_time  = 0.7,         # Animation interval time for gif animation
-        download_map    = cfg.dir_download,  # Map for downloading the images too
-        animation_map   = cfg.dir_animation, # Map for the animations
-        remove_download = False,       # Remove the downloaded images
-        gif_compress    = True,        # Compress the size of the animation
-        date_submap     = True,        # Set True to create extra date submaps
-        date_subname    = True,        # Set True to add date in filename
-        check           = True,        # No double downloads check
-        verbose         = True         # Overwrite verbose -> see config.py
-    )
+    # model(
+    #     name            = 'gfs',       # Options model: gfs, gefs, ukmo, ecmwf, icon_eu, gdps, ARPEGE, GEM
+    #     option          = 'snowdepth', # Options type: overview, winteroverview, 850temp, 2mtemp, snowdepth, wind10mkph, accprecip
+    #     area            = 'euratl',    # Options for area eg. euratl europe france germany low_countries
+    #     yyyymmdd        = '20211117',  # Date of run format: yyyymmdd
+    #     run             = '12',        # Options time: 00, 06, 12, 18
+    #     start_time      = 0,           # Start image
+    #     step_time       = 1,           # Step image
+    #     end_time        = 384,         # End image
+    #     animation_time  = 0.7,         # Animation interval time for gif animation
+    #     download_map    = cfg.dir_download,  # Map for downloading the images too
+    #     animation_map   = cfg.dir_animation, # Map for the animations
+    #     remove_download = False,       # Remove the downloaded images
+    #     gif_compress    = True,        # Compress the size of the animation
+    #     date_submap     = True,        # Set True to create extra date submaps
+    #     date_subname    = True,        # Set True to add date in filename
+    #     check           = True,        # No double downloads check
+    #     verbose         = True         # Overwrite verbose -> see config.py
+    # )
 
-    dnow = anim.yyyymmdd_now()
+    dnow = ymd.yyyymmdd_now()
     run = '12'
     model( icon_eu, overview, europe,  dnow, run,   0, 1,  60, 0.7 )
     model( icon_eu, overview, europe,  dnow, run,  60, 1, 120, 0.7 )
     # model( icon_eu, temp2meter, benelux, dnow, run,   0, 1, 120, 0.7 )
     # snowdepth
 
-
+    model( icon_eu, snowdepth, low_countries,  dnow, run,   0, 1, 120, 0.7 )
+    model( icon_eu, snowdepth, low_countries,  dnow, run,  60, 1, 120, 0.7 )
 
     ############################################################################
     # Example daily repeating download_

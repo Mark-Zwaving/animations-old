@@ -4,14 +4,16 @@
 __author__     =  'Mark Zwaving'
 __email__      =  'markzwaving@gmail.com'
 __copyright__  =  'Copyright (C) Mark Zwaving. All rights reserved.'
-__license__    =  'GNU Lesser General Public License (LGPL)'
+__license__    =  'MIT License'
 __version__    =  '0.0.5'
 __maintainer__ =  'Mark Zwaving'
 __status__     =  'Development'
 # Python version > 3.7 (fstring)
 
-import config as cfg # Configuration defaults. See config.py
-import sources.anim as anim  # import animation library
+import model.config as cfg # Configuration defaults. See config.py
+import model.anim as anim  # import animation library
+import model.ymd as ymd #
+import model.util as util #
 import threading, time # Multi processing and time
 
 # Base knmi download url for 10 min images
@@ -33,13 +35,13 @@ def daily_interval_knmi_10min(
     ):
     '''Function handles repetative daily downloads and makes the animations'''
     # Get the current start date if not given
-    if not start_date: start_date = anim.yyyymmdd_now()
+    if not start_date: start_date = ymd.yyyymmdd_now()
 
     # Start loop
     name, _ = anim.basename_extension(url)
     while True:
         # Wait untill start time and start date
-        anim.pause(start_time, start_date, f'start download {name} at')
+        util.pause(start_time, start_date, f'start download {name} at')
 
         # Start interval download for url
         anim.interval_download_animation(
@@ -47,7 +49,7 @@ def daily_interval_knmi_10min(
             name_submap       = 'knmi',   # Name of subdirectory in the maps download and animation
             interval_download = 10,       # Interval time for downloading Images (minutes)
             duration_download = duration, # Total time for downloading all the images (minutes)
-            animation_time    = cfg.animation_time,  # Animation interval time for gif animation
+            animation_time    = 0.7,  # Animation interval time for gif animation
             download_map      = cfg.download_dir,    # Map for downloading the images too
             animation_map     = cfg.animation_dir,   # Map for the animations
             remove_download   = False,    # Remove the downloaded images
@@ -57,16 +59,16 @@ def daily_interval_knmi_10min(
         )
 
         # Make a new correct new date
-        y, m, d, hh, _, _ = anim.ymd_hms_now() # Get current date and time
+        y, m, d, hh, _, _ = ymd.ymd_hms_now() # Get current date and time
         act_date = f'{y}{m}{d}' # Current date
         if int(act_date) > int(start_date): # Next day is there
             hours = int(start_time.split(':')[0])
             if hours > int(hh): # Passed the start_time
-                start_date = anim.yyyymmdd_next_day() # Get the next day
+                start_date = ymd.yyyymmdd_next_day() # Get the next day
             else:
-                start_date = anim.yyyymmss_now() # Get the current day
-        else: # We are still on the same day 
-           start_date = anim.yyyymmdd_next_day() # Get the next day
+                start_date = ymd.yyyymmss_now() # Get the current day
+        else: # We are still on the same day
+           start_date = ymd.yyyymmdd_next_day() # Get the next day
 
         # Check end date if there
         if stop_date: # Check to stop
@@ -97,8 +99,8 @@ if __name__ == "__main__":
     # Example: multiple downloads at the same time usings threads
     cfg.timer = False # No multiple clocks at the same time, cannot
 
-    date = anim.yyyymmdd_now() # Start date today
-    duration = 14 * 60 # Duration time download (minutes), 14 hours
+    date = ymd.yyyymmdd_now() # Start date today
+    duration = 1 * 20 # Duration time download (minutes), 14 hours
 
     # Start 4 threads with different urls and on different times/date
     # Interval download morning (day) temperature animation

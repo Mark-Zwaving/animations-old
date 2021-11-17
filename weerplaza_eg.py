@@ -4,14 +4,14 @@
 __author__     =  'Mark Zwaving'
 __email__      =  'markzwaving@gmail.com'
 __copyright__  =  'Copyright (C) Mark Zwaving. All rights reserved.'
-__license__    =  'GNU Lesser General Public License (LGPL)'
-__version__    =  '0.0.4'
+__license__    =  'MIT License'
+__version__    =  '0.0.6'
 __maintainer__ =  'Mark Zwaving'
 __status__     =  'Development'
 # Python version > 3.7 (fstring
 
-import config as cfg # Configuration defaults. See config.py
-import model.animation as anim  # import animation library
+import common.config as cfg # Configuration defaults. See config.py
+import common.model.animation as anim  # import animation library
 import threading, time # Multi processing and time
 
 # Example download image urls from weerplaza
@@ -26,7 +26,7 @@ def weerplaza_10min(url):
     anim.interval_download_animation(
         download_url,     # Give a downloadurl
         download_map      = cfg.dir_download,   # Map for downloading the images too
-        animation_map     = anim.dir_animation, # The path/name of the animation file
+        animation_map     = cfg.dir_animation, # The path/name of the animation file
         animation_name    = '',    # T
         interval_download = 10,    # Interval time for downloading Images (minutes)
         duration_download = 60,    # Total time for downloading all the images (minutes)
@@ -38,7 +38,6 @@ def weerplaza_10min(url):
         verbose           = False  # Output to screen
     )
 
-
 if __name__ == "__main__":
     ############################################################################
     # Weerplaza eg: 10 minutes refresh images
@@ -46,7 +45,7 @@ if __name__ == "__main__":
     anim.interval_download_animation(
         download_url      = url_t10cm,  # Give a downloadurl
         download_map      = cfg.dir_download,   # Map for downloading the images too
-        animation_map     = anim.dir_animation, # The path/name of the animation file
+        animation_map     = cfg.dir_animation, # The path/name of the animation file
         animation_name    = '',    # The path/name of the animation file
         interval_download = 10,    # Interval time for downloading Images (minutes)
         duration_download = 10,    # Total time for downloading all the images (minutes)

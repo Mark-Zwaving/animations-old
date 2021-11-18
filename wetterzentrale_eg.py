@@ -173,10 +173,10 @@ def download_models_daily( ):
                             '12': '18:00:00', '18': '00:00:00'
                             }.items():
             har40_time = ico_time = gfs_time = stime # Start time models harmony and icon, gfs
-            ecm_time = ymd.hh_mm_ss_add_hour(stime, 2) # Two hours later
+            ecm_time = ymd.hh_mm_ss_plus_hour(stime, 2) # Two hours later
 
             # Download date For the 18 hour run we need the next day to wait for
-            if run == '18': d = anim.yyyymmdd_next_day()
+            if run == '18': d = anim.yyyymmdd_plus_day()
 
             # HARMONIE NL
             util.pause( har40_time, d, f'download models HARMONIE & ICON for run {run} at' )
@@ -222,7 +222,7 @@ if __name__ == "__main__":
 
     ############################################################################
     # Examples model animations
-    # daily_processes()
+    daily_processes()
 
     # 180 - 384
     # run, dm, am = '06', cfg.dir_download, cfg.dir_animation # Base maps (shortened)

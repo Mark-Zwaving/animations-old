@@ -255,8 +255,8 @@ if __name__ == "__main__":
     # model( icon_eu, temp2meter, benelux, dnow, run,   0, 1, 120, 0.7 )
     # snowdepth
 
-    model( icon_eu, snowdepth, low_countries,  dnow, run,   0, 1,  60, 0.7 )
-    model( icon_eu, snowdepth, low_countries,  dnow, run,  60, 1, 120, 0.7 )
+    # model( gfs, snowdepth, low_countries,  dnow, run,   0, 1,  60, 0.7 )
+    model( gfs, snowdepth, low_countries,  dnow, run,  192, 3, 384, 0.7 )
 
     ############################################################################
     # Example daily repeating download_

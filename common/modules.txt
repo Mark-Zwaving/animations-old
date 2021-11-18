@@ -1,0 +1,3 @@
+httplib
+pip install httplib2
+python3 -m pip install Pillow

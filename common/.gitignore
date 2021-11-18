@@ -1,0 +1,7 @@
+*.pyc
+*.gif
+*.log
+__pycache__/
+logs/
+download/
+animation/

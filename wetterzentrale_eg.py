@@ -172,8 +172,7 @@ def download_models_daily( ):
         for run, stime in { '00': '06:00:00', '06': '12:00:00',
                             '12': '18:00:00', '18': '00:00:00'
                             }.items():
-            har40_time, ico_time = stime, stime # Start time models harmony and icon
-            gfs_time = ymd.hh_mm_ss_add_minute(stime, 30) # 30 minutes later
+            har40_time = ico_time = gfs_time = stime # Start time models harmony and icon, gfs
             ecm_time = ymd.hh_mm_ss_add_hour(stime, 2) # Two hours later
 
             # Download date For the 18 hour run we need the next day to wait for
@@ -183,7 +182,7 @@ def download_models_daily( ):
             util.pause( har40_time, d, f'download models HARMONIE & ICON for run {run} at' )
             # model( harmonie, 'temp850',             'OP', 'ME', run, 0, 1, 48, 0.7, dm, am, False, True, True, True, True, True )
             model( harmonie, 'temp2meter_HD', 'OP', 'NL', run, 0, 1, 48, dm, am, iv, rm, cp, ds, dn, ck, vb )
-            model( harmonie, 'precipiation_sum_HD', 'OP', 'NL', run, 0, 1, 48, dm, am, iv, rm, cp, ds, dn, ck, vb )
+            # model( harmonie, 'precipiation_sum_HD', 'OP', 'NL', run, 0, 1, 48, dm, am, iv, rm, cp, ds, dn, ck, vb )
             model( harmonie, 'snowsum_HD', 'OP', 'NL', run, 0, 1, 48, dm, am, iv, rm, cp, ds, dn, ck, vb )
 
             # ICON
@@ -226,9 +225,9 @@ if __name__ == "__main__":
     # daily_processes()
 
     # 180 - 384
-    run, dm, am = '06', cfg.dir_download, cfg.dir_animation # Base maps (shortened)
-    iv, rm, cp, ds, dn, ck, vb = 0.7, False, True, True, True, True, True
-    model( gfs, 'snow_cover', 'OP', 'ME', run, 180, 3, 384, dm, am, iv, rm, cp, ds, dn, ck, vb )
+    # run, dm, am = '06', cfg.dir_download, cfg.dir_animation # Base maps (shortened)
+    # iv, rm, cp, ds, dn, ck, vb = 0.7, False, True, True, True, True, True
+    # model( gfs, 'snow_cover', 'OP', 'ME', run, 180, 3, 384, dm, am, iv, rm, cp, ds, dn, ck, vb )
 
     # model( gfs, 'hpa500',     'OP', 'EU', run,   0, 1,  92, dm, am, iv, rm, cp, ds, dn, ck, vb )
     # model( gfs, 'hpa500',     'OP', 'EU', run,  92, 1, 288, dm, am, iv, rm, cp, ds, dn, ck, vb )
@@ -262,7 +261,6 @@ if __name__ == "__main__":
     # model( gfs, 'temp2meter', 'OP', 'ME', run, 144, 1, 384, 0.5, dm, am, rm, cp, ds, dn, ck, vb )
     # model( gfs, 'snow_cover', 'OP', 'ME', run,   0, 1, 384, 0.4, dm, am, rm, cp, ds, dn, ck, vb )
     # model( gfs, 'snow_cover', 'OP', 'ME', run, 192, 1, 384, 0.5, dm, am, rm, cp, ds, dn, ck, vb )
-
 
     # Model example with defaults hiding
     # model(  name   = gfs,        # Options for which model: GFS,ECM,WRF,ICO, HAR40,ARPEGE, GEM

@@ -105,7 +105,7 @@ def interval_download_animation(
     if not animation_name:
         animation_name = f'animation_{web_name}_{id_name}'
     else:
-        animation_name = util.name_ext(animation_name)
+        animation_name, _ = util.name_ext(animation_name)
     if date_subname: # Add date time to animation name
         y, m, d, hh, mm, ss = ymd.y_m_d_h_m_s_now()
         animation_name += f'_{y}-{m}-{d}_{hh}-{mm}-{ss}'

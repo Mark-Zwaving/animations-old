@@ -50,14 +50,8 @@ model_options = {
    '51': 'snowsum_HD'
 }
 
-# Default model options wetterzentrale.de
-name   = gfs      # Options for model: GFS, ECM
-option = 'hpa500' # Options image type: can be num or weather. See model_options
-member = 'OP'     # Options for members: OP, AVG, PARA, SPR
-area   = 'EU'     # Options for area: EU, ME, NL, BE, SC
-run    = '00'     # Options for run: 00, 06, 12, 18
-name_source = 'wetterzentrale' # Extra wz. submap
-image_ext   = '.png' # Download image extension
+# Download image extension
+image_ext   = '.png'
 
 # Process options for url
 def options(option):
@@ -79,17 +73,17 @@ def options(option):
 
 # Main wetterzentrale.de function what makes animations from wetterzentrale images
 def model(
-        name             = gfs,    # Options for which model: GFS,ECM,WRF,ICO, HAR40,ARPEGE, GEM
-        option           = option, # Options for type, weather name or num. See model_options
-        member           = member, # Options for member: OP, AVG, PARA, SPR
-        area             = area,   # Options for area: EU, NL, ME
-        run              = run,    # Options for run: 00, 06, 12, 18
+        name             = 'gfs',    # Options for which model: GFS,ECM,WRF,ICO, HAR40,ARPEGE, GEM
+        option           = 'hpa500', # Options for type, weather name or num. See model_options
+        member           = 'OP', # Options for member: OP, AVG, PARA, SPR
+        area             = 'EU',   # Options for area: EU, ME, NL, BE, SC
+        run              = '00',    # Options for run: 00, 06, 12, 18
         start_time       = 0,      # Start image
         step_time        = 12,     # Interval step for images
         end_time         = 240,    # End image
-        animation_time   = 0.7,    # Animation interval time for gif animation
         download_map     = cfg.dir_download,    # Map for downloading the images too
         animation_map    = cfg.dir_animation,   # Map for the animations
+        animation_time   = 0.7,    # Animation interval time for gif animation
         remove_download  = False, # Remove the downloaded images
         gif_compress     = True,  # Compress the size of the animation
         date_submap      = True,  # Set True to create extra date submaps
@@ -99,7 +93,8 @@ def model(
     ):
     '''Function creates and saves a gif animation based on weather model output
        type and time options. Data is from wetterzentrale.de'''
-    ok, verbose = False, cnsl.verbose(verbose)
+
+    ok, verbose, st = False, cnsl.verbose(verbose), time.time()
     web_name = util.url_name(base_url)
     cnsl.log(f'Start {web_name} animation {ymd.now()}', verbose)
 
@@ -162,13 +157,15 @@ def model(
         cnsl.log('Error: weather type name not found', verbose)
         cnsl.log('Check model_options for an (correct) name', verbose)
 
+    util.time_passed(st, f'Model {name} {member} {area} {option} downloaded and animation made in', verbose)
     cnsl.log(f'End {web_name} animation', verbose)
     return ok, path
 
 def download_models_daily( ):
     '''Function downloads daily several models at different times'''
-    date = ymd.yyyymmdd_now() # Start today
-    dmap, amap = cfg.dir_download, cfg.dir_animation # Base maps (shortened)
+    d = ymd.yyyymmdd_now() # Start today
+    iv, rm, cp, ds, dn, ck, vb = 0.7, False, True, True, True, True, True
+    dm, am = cfg.dir_download, cfg.dir_animation # Base maps (shortened)
     # Eternal loop
     while True:
         # Download GFS  models run 00, 12, 18 at given times
@@ -180,30 +177,37 @@ def download_models_daily( ):
             ecm_time = ymd.hh_mm_ss_add_hour(stime, 2) # Two hours later
 
             # Download date For the 18 hour run we need the next day to wait for
-            if run == '18': date = anim.yyyymmdd_next_day()
+            if run == '18': d = anim.yyyymmdd_next_day()
 
             # HARMONIE NL
-            util.pause( har40_time, date, f'download models HARMONIE & ICON for run {run} at' )
-            model( harmonie, 'temp850',             'OP', 'ME', run, 0, 1, 48, 0.7, dmap, amap, False, True, True, True, True, True )
-            model( harmonie, 'temp2meter_HD',       'OP', 'NL', run, 0, 1, 48, 0.7, dmap, amap, False, True, True, True, True, True )
-            model( harmonie, 'precipiation_sum_HD', 'OP', 'NL', run, 0, 1, 48, 0.7, dmap, amap, False, True, True, True, True, True )
+            util.pause( har40_time, d, f'download models HARMONIE & ICON for run {run} at' )
+            # model( harmonie, 'temp850',             'OP', 'ME', run, 0, 1, 48, 0.7, dm, am, False, True, True, True, True, True )
+            model( harmonie, 'temp2meter_HD', 'OP', 'NL', run, 0, 1, 48, dm, am, iv, rm, cp, ds, dn, ck, vb )
+            # model( harmonie, 'precipiation_sum_HD', 'OP', 'NL', run, 0, 1, 48, dm, am, iv, rm, cp, ds, dn, ck, vb )
+            model( harmonie, 'snowsum_HD', 'OP', 'NL', run, 0, 1, 48, dm, am, iv, rm, cp, ds, dn, ck, vb )
+
             # ICON
-            icon_end = 120 if run in ['18', '06'] else 180
-            model( icon, 'hpa500',           'OP', 'EU', run, 0, 3, 120, 0.7, dmap, amap, False, True, True, True, True, True )
-            model( icon, 'temp2meter',       'OP', 'ME', run, 0, 3, 120, 0.7, dmap, amap, False, True, True, True, True, True )
-            model( icon, 'snow_cover',       'OP', 'ME', run, 0, 3, 120, 0.7, dmap, amap, False, True, True, True, True, True )
+            model( icon, 'hpa500',     'OP', 'EU', run, 0, 1, 120, dm, am, iv, rm, cp, ds, dn, ck, vb )
+            model( icon, 'temp2meter', 'OP', 'ME', run, 0, 1, 120, dm, am, iv, rm, cp, ds, dn, ck, vb )
+            model( icon, 'snow_cover', 'OP', 'ME', run, 0, 1, 120, dm, am, iv, rm, cp, ds, dn, ck, vb )
+
             # GFS
-            anim.pause( gfs_time, date, f'download model GFS for run {run} at' ) # Update time for GFS, One hour later
-            model( gfs, 'hpa500',           'OP', 'EU', run, 0, 1, 192, 0.7, dmap, amap, False, True, True, True, True, True )
-            model( gfs, 'hpa500',           'OP', 'EU', run, 0, 1, 384, 0.7, dmap, amap, False, True, True, True, True, True )
-            model( gfs, 'temp2meter',       'OP', 'ME', run, 0, 3, 288, 0.7, dmap, amap, False, True, True, True, True, True )
-            model( gfs, 'snow_cover',       'OP', 'ME', run, 0, 3, 288, 0.7, dmap, amap, False, True, True, True, True, True )
+            anim.pause( gfs_time, d, f'download model GFS for run {run} at' ) # Update time for GFS, One hour later
+            model( gfs, 'hpa500', 'OP', 'EU', run,   0, 1,  92, dm, am, iv, rm, cp, ds, dn, ck, vb )
+            model( gfs, 'hpa500', 'OP', 'EU', run,  92, 1, 288, dm, am, iv, rm, cp, ds, dn, ck, vb )
+            model( gfs, 'hpa500', 'OP', 'EU', run, 288, 3, 384, dm, am, iv, rm, cp, ds, dn, ck, vb )
+            model( gfs, 'temp2meter', 'OP', 'ME', run,   0, 1,  92, dm, am, iv, rm, cp, ds, dn, ck, vb )
+            model( gfs, 'temp2meter', 'OP', 'ME', run,  92, 1, 288, dm, am, iv, rm, cp, ds, dn, ck, vb )
+            model( gfs, 'temp2meter', 'OP', 'ME', run, 288, 3, 384, dm, am, iv, rm, cp, ds, dn, ck, vb )
+            model( gfs, 'snow_cover', 'OP', 'ME', run,   0, 1,  92, dm, am, iv, rm, cp, ds, dn, ck, vb )
+            model( gfs, 'snow_cover', 'OP', 'ME', run,  92, 1, 288, dm, am, iv, rm, cp, ds, dn, ck, vb )
+            model( gfs, 'snow_cover', 'OP', 'ME', run, 288, 3, 384, dm, am, iv, rm, cp, ds, dn, ck, vb )
+
             # ECMWF
-            if run in ['00', '12']: # Only 00 and 12 run
-                # Update time for ECWMF, ? hours later
-                anim.pause(ecm_time, date, f'download model ECMWF run {run} ECMWF at' )
-                for member in ['OP', 'AVG']: # Download two members
-                    model( ecmwf, 'hpa500', member, 'EU', run, 0, 24, 240, 0.7, dmap, amap, False, True, True, True )
+            if run in ['00', '12']: # Only 00 and 12 run @ 02 & 20
+                anim.pause( ecm_time, d, f'download model ECMWF run {run} ECMWF at' )
+                for member in ['OP', 'AVG', 'PARA']: # Download two members
+                    model( ecmwf, 'hpa500', member, 'EU', run, 0, 24, 240, dm, am, iv, rm, cp, ds, dn, ck, vb )
 
 def daily_processes():
     '''Function start two daily processess/threads.'''
@@ -218,6 +222,19 @@ if __name__ == "__main__":
     # dir_www = os.path.abspath('/var/www/html/weather/images')
     # cfg.dir_download  = util.mk_path(dir_www, 'download')
     # cfg.dir_animation = util.mk_path(dir_www, 'animation')
+
+    ############################################################################
+    # Examples model animations
+    # daily_processes()
+
+    run, dm, am = '18', cfg.dir_download, cfg.dir_animation # Base maps (shortened)
+    iv, rm, cp, ds, dn, ck, vb = 0.7, False, True, True, True, True, True
+    # model( gfs, 'hpa500',     'OP', 'EU', run,   0, 1,  92, dm, am, iv, rm, cp, ds, dn, ck, vb )
+    # model( gfs, 'hpa500',     'OP', 'EU', run,  92, 1, 288, dm, am, iv, rm, cp, ds, dn, ck, vb )
+    # model( gfs, 'hpa500',     'OP', 'EU', run, 288, 3, 384, dm, am, iv, rm, cp, ds, dn, ck, vb )
+
+    model( gfs, 'snow_cover', 'OP', 'ME', run,   0, 1, 240, dm, am, iv, rm, cp, ds, dn, ck, vb )
+    model( gfs, 'snow_cover', 'OP', 'ME', run, 240, 3, 384, dm, am, iv, rm, cp, ds, dn, ck, vb )
 
     # model(
     #     name             = gfs,    # Options for which model: GFS,ECM,WRF,ICO, HAR40,ARPEGE, GEM
@@ -239,19 +256,16 @@ if __name__ == "__main__":
     #     verbose          = True  # With output to screen
     # )
 
-    run, dm, am = '12', cfg.dir_download, cfg.dir_animation # Base maps (shortened)
-    iv, rm, cp, ds, dn, ck, vb = 0.7, False, True, True, True, True, True
-    model( gfs, 'hpa500',     'OP', 'EU', run,   0, 1,  96, iv, dm, am, rm, cp, ds, dn, ck, vb )
-    model( gfs, 'hpa500',     'OP', 'EU', run,  96, 1, 192, iv, dm, am, rm, cp, ds, dn, ck, vb )
-    model( gfs, 'hpa500',     'OP', 'EU', run, 192, 3, 384, iv, dm, am, rm, cp, ds, dn, ck, vb )
-    model( gfs, 'temp2meter', 'OP', 'ME', run,   0, 1, 144, 0.5, dm, am, rm, cp, ds, dn, ck, vb )
-    model( gfs, 'temp2meter', 'OP', 'ME', run, 144, 1, 384, 0.5, dm, am, rm, cp, ds, dn, ck, vb )
-    model( gfs, 'snow_cover', 'OP', 'ME', run,   0, 1, 384, 0.4, dm, am, rm, cp, ds, dn, ck, vb )
+    # run, dm, am = '12', cfg.dir_download, cfg.dir_animation # Base maps (shortened)
+    # iv, rm, cp, ds, dn, ck, vb = 0.7, False, True, True, True, True, True
+    # model( gfs, 'hpa500',     'OP', 'EU', run,   0, 1,  96, iv, dm, am, rm, cp, ds, dn, ck, vb )
+    # model( gfs, 'hpa500',     'OP', 'EU', run,  96, 1, 192, iv, dm, am, rm, cp, ds, dn, ck, vb )
+    # model( gfs, 'hpa500',     'OP', 'EU', run, 192, 3, 384, iv, dm, am, rm, cp, ds, dn, ck, vb )
+    # model( gfs, 'temp2meter', 'OP', 'ME', run,   0, 1, 144, 0.5, dm, am, rm, cp, ds, dn, ck, vb )
+    # model( gfs, 'temp2meter', 'OP', 'ME', run, 144, 1, 384, 0.5, dm, am, rm, cp, ds, dn, ck, vb )
+    # model( gfs, 'snow_cover', 'OP', 'ME', run,   0, 1, 384, 0.4, dm, am, rm, cp, ds, dn, ck, vb )
     # model( gfs, 'snow_cover', 'OP', 'ME', run, 192, 1, 384, 0.5, dm, am, rm, cp, ds, dn, ck, vb )
 
-    ############################################################################
-    # Examples model animations
-    # daily_processes()
 
     # Model example (full) with all the options.
     # See config.py for the default values
@@ -286,16 +300,16 @@ if __name__ == "__main__":
     ############################################################################
     # More examples models
     # Download and animation map
-    # dmap, amap = cfg.download_dir, cfg.animation_dir
-    # model( harmonie,  'temp850',          'OP',  'ME', '18', 0,  1,  48, 0.7, dmap, amap, False, True, True, True )
-    # model( harmonie,  'temp2meter_HD',    'OP',  'NL', '18', 0,  1,  48, 0.7, dmap, amap, False, True, True, True )
-    # model( gfs,       'precipiation_sum', 'OP',  'ME', '18', 0,  3, 288, 0.7, dmap, amap, False, True, True, True )
-    # model( icon,      'temp2meter',       'OP',  'ME', '18', 0,  3, 180, 0.7, dmap, amap, False, True, True, True )
-    # model( ecmwf,     'hpa500',           'AVG', 'EU', '12', 0, 24, 240, 0.7, dmap, amap, False, True, True, True )
-    # model( icon,      'temp2meter',       'OP',  'SC', '12', 0,  1, 180, 0.4, dmap, amap, False, True, True, True )
-    # model( gfs, 'hpa500', 'OP', 'SC', '00', 0, 6, 288, 0.4, dmap, amap, False, True, True, True )
+    # dm, am = cfg.download_dir, cfg.animation_dir
+    # model( harmonie,  'temp850',          'OP',  'ME', '18', 0,  1,  48, 0.7, dm, am, False, True, True, True )
+    # model( harmonie,  'temp2meter_HD',    'OP',  'NL', '18', 0,  1,  48, 0.7, dm, am, False, True, True, True )
+    # model( gfs,       'precipiation_sum', 'OP',  'ME', '18', 0,  3, 288, 0.7, dm, am, False, True, True, True )
+    # model( icon,      'temp2meter',       'OP',  'ME', '18', 0,  3, 180, 0.7, dm, am, False, True, True, True )
+    # model( ecmwf,     'hpa500',           'AVG', 'EU', '12', 0, 24, 240, 0.7, dm, am, False, True, True, True )
+    # model( icon,      'temp2meter',       'OP',  'SC', '12', 0,  1, 180, 0.4, dm, am, False, True, True, True )
+    # model( gfs, 'hpa500', 'OP', 'SC', '00', 0, 6, 288, 0.4, dm, am, False, True, True, True )
 
-    # dmap, amap = cfg.download_dir, cfg.animation_dir
-    # model( ecmwf, 'hpa500', 'OP', 'EU', '00', 0, 24, 240, 0.7, dmap, amap, False, True, True, True )
+    # dm, am = cfg.download_dir, cfg.animation_dir
+    # model( ecmwf, 'hpa500', 'OP', 'EU', '00', 0, 24, 240, 0.7, dm, am, False, True, True, True )
 
     util.app_time()

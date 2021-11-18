@@ -54,7 +54,7 @@ nord_east_europe = 'neeurope'
 europe_atlantic  = 'euratl'
 europe           = 'europe'
 germany          = 'germany'
-benelux          = 'low_countries'
+benelux = low_countries = 'low_countries'
 
 # Date today
 ymd_now = ymd.yyyymmdd_now()
@@ -77,12 +77,12 @@ def model(
         gif_compress    = True,        # Compress the size of the animation
         date_submap     = True,        # Set True to create extra date submaps
         date_subname    = True,        # Set True to add a date in the filename
-         check          = True,        # No double downloads check
+        check           = True,        # No double downloads check
         verbose         = True         # Overwrite verbose -> see config.py
     ):
     '''Function creates and saves a gif animation based on weather model output
        type and time options. Data is from wxcharts.com'''
-    ok, path, verbose = False, '', cnsl.verbose(verbose)
+    ok, path, verbose, st = False, '', cnsl.verbose(verbose), time.time()
     web_name = util.url_name(base_url)
     cnsl.log(f'Start {web_name} animation {ymd.now()}', verbose)
     cnsl.log(f'Model is {name} | Option is {option} | Area is {area} | Date is {yyyymmdd}', verbose)
@@ -139,6 +139,7 @@ def model(
     else:
         cnsl.log(f'Error in date {yyyymmdd}', cfg.error)
 
+    util.time_passed(st, f'Model {name} {option} downloaded and animation made in', verbose)
     cnsl.log(f'End {web_name} animation', verbose)
     return ok, path
 
@@ -249,12 +250,12 @@ if __name__ == "__main__":
 
     dnow = ymd.yyyymmdd_now()
     run = '12'
-    model( icon_eu, overview, europe,  dnow, run,   0, 1,  60, 0.7 )
-    model( icon_eu, overview, europe,  dnow, run,  60, 1, 120, 0.7 )
+    # model( icon_eu, overview, europe,  dnow, run,   0, 1,  60, 0.7 )
+    # model( icon_eu, overview, europe,  dnow, run,  60, 1, 120, 0.7 )
     # model( icon_eu, temp2meter, benelux, dnow, run,   0, 1, 120, 0.7 )
     # snowdepth
 
-    model( icon_eu, snowdepth, low_countries,  dnow, run,   0, 1, 120, 0.7 )
+    model( icon_eu, snowdepth, low_countries,  dnow, run,   0, 1,  60, 0.7 )
     model( icon_eu, snowdepth, low_countries,  dnow, run,  60, 1, 120, 0.7 )
 
     ############################################################################

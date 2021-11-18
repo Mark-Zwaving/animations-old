@@ -88,6 +88,9 @@ def interval_download_animation(
     cnsl.log(f'Download interval {interval_download} minutes', verbose)
     cnsl.log(f'Download duration {duration_download} minutes', verbose)
     cnsl.log(f'Compress animation {gif_compress}', verbose)
+    cnsl.log(f'With date submaps {date_submap}', verbose)
+    cnsl.log(f'With date subname {date_subname}', verbose)
+    cnsl.log(f'Animation time {animation_time} seconds', verbose)
     cnsl.log(f'Remove downloaded images {remove_download}\n', verbose)
 
     # Start interval downloads
@@ -96,8 +99,28 @@ def interval_download_animation(
                     duration_download, date_submap, date_subname,
                     check, verbose )
 
+    # Make animation name
+    web_name = util.url_name(download_url)
+    id_name, _  = util.name_ext(download_url)
+    if not animation_name:
+        animation_name = f'animation_{web_name}_{id_name}'
+    else:
+        animation_name = util.name_ext(animation_name)
+    if date_subname: # Add date time to animation name
+        y, m, d, hh, mm, ss = ymd.y_m_d_h_m_s_now()
+        animation_name += f'_{y}-{m}-{d}_{hh}-{mm}-{ss}'
+
+    # Make animation map
+    if date_submap: # Add date to aninmation map
+        y, m, d = ymd.yyyy_mm_dd_now()
+        animation_map = util.mk_path(animation_map, f'{y}/{m}/{d}')
+    animation_map = util.mk_path(animation_map, web_name) # Add web id to path
+
+    # Animation path
+    path = util.mk_path(animation_map, f'{animation_name}.gif')
+
     # Make animation
-    ok, path = create(paths, animation_name, animation_time, date_subname, verbose)
+    ok, path = create(paths, path, animation_time, verbose)
 
     # Compress animation
     if ok and gif_compress: util.compress_gif(path)

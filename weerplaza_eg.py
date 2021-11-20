@@ -20,7 +20,7 @@ url_t10cm      = f'{url_base_10min}/GMT_T10C_latest.png' # Temp 10cm
 url_weerbeeld  = f'{url_base_10min}/nl_10min.jpg'        # Weerbeeld
 url_t2meter    = f'{url_base_10min}/GMT_TTTT_latest.png' # Temp 2 meter
 
-def weerplaza_10min(url):
+def weerplaza_10min(url, verbose=None):
     '''Easy wrapper fn. For interval downloading images. With default values
        from config.py.'''
     interval_download_animation( url, # Give a downloadurl
@@ -34,8 +34,8 @@ def weerplaza_10min(url):
         gif_compress      = True,  # Compress the size of the animation
         date_submap       = True,  # Set True to create extra date submaps
         date_subname      = True,  # Set True to create extra date in files
-        check             = False,  # No double downloads check
-        verbose           = False  # With output to screen
+        check             = False, # No double downloads check
+        verbose           = False  # Overwrite verbose -> see config.py
     )
 
 if __name__ == "__main__":
@@ -54,7 +54,7 @@ if __name__ == "__main__":
     #     date_submap       = True,  # Set True to create extra date submaps
     #     date_subname      = True,  # Set True to create extra date in files
     #     check             = True,  # No double downloads check
-    #     verbose           = False  # With output to screen
+    #     verbose           = None   # Overwrite verbose -> see config.py
     # )
 
     # See above

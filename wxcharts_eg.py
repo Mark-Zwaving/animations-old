@@ -78,11 +78,11 @@ def model(
         date_submap     = True,        # Set True to create extra date submaps
         date_subname    = True,        # Set True to add a date in the filename
         check           = True,        # No double downloads check
-        verbose         = True         # Overwrite verbose -> see config.py
+        verbose         = None         # Overwrite verbose -> see config.py
     ):
     '''Function creates and saves a gif animation based on weather model output
        type and time options. Data is from wxcharts.com'''
-    ok, path, verbose, st = False, '', cnsl.verbose(verbose), time.time()
+    ok, path, st = False, '', time.time()
     web_name = util.url_name(base_url)
     cnsl.log(f'Start {web_name} animation {ymd.now()}', verbose)
     cnsl.log(f'Model is {name} | Option is {option} | Area is {area} | Date is {yyyymmdd}', verbose)
@@ -152,44 +152,46 @@ def download_model( types, # List of weathertypes -> overview, tmep2meter
                     start_time,    # Start time of run
                     step_time,     # Interval time of run
                     end_time       # End time of run
+                    verbose = None  # overwerite default verbose
     ):
     '''Function downloads from optoins lists with weather types and areas all
        the models run'''
     for option in types: # Which type weather images
         for area in areas: # Which areas
             model( name=name, option=option, area=area, run=run, yyyymmdd=yyyymmdd,
-                   start_time=start_time, step_time=step_time, end_time=end_time )
+                   start_time=start_time, step_time=step_time, end_time=end_time,
+                    verbose )
 
-def download_model_icon_eu(yyyymmdd, run):
+def download_model_icon_eu(yyyymmdd, run, verbose=None):
     '''Function downloads model icon with several options'''
     wtypes = [overview, temp2meter, snowdepth] # ,sum_precip, wind10m, hPa850, winterview, snowdepth
     areas  = [europe, benelux]
     download_model( types=wtypes, areas=areas, name=icon_eu, yyyymmdd=yyyymmdd,
-                    run=run, start_time=0, step_time=3, end_time=60 )
+                    run=run, start_time=0, step_time=3, end_time=60, verbose )
     download_model( types=wtypes, areas=areas, name=icon_eu, yyyymmdd=yyyymmdd,
-                    run=run, start_time=60, step_time=3, end_time=120 )
+                    run=run, start_time=60, step_time=3, end_time=120, verbose )
 
-def download_model_gfs(yyyymmdd, run):
+def download_model_gfs(yyyymmdd, run, verbose=None):
     '''Function downloads model gfs with several options'''
     wtypes = [overview, temp2meter, snowdepth] #, sum_precip, wind10m, hPa850, winterview, snowdepth
     areas  = [europe_atlantic, benelux] # europe
     download_model( types=wtypes, areas=areas, name=gfs, yyyymmdd=yyyymmdd,
-                    run=run, start_time=0, step_time=6, end_time=120 )
+                    run=run, start_time=0, step_time=6, end_time=120, verbose )
     download_model( types=wtypes, areas=areas, name=gfs, yyyymmdd=yyyymmdd,
-                    run=run, start_time=120, step_time=6, end_time=240 )
+                    run=run, start_time=120, step_time=6, end_time=240, verbose )
     download_model( types=wtypes, areas=areas, name=gfs, yyyymmdd=yyyymmdd,
-                    run=run, start_time=240, step_time=6, end_time=360 )
+                    run=run, start_time=240, step_time=6, end_time=360, verbose )
 
-def download_model_ec(yyyymmdd, run):
+def download_model_ec(yyyymmdd, run, verbose=None):
     '''Function downloads model ecmwf with seceral options'''
     wtypes = [overview, temp2meter, snowdepth] #, sum_precip, wind10m, hPa850 , winterview, snowdepth
     areas  = [europe_atlantic, benelux] # europe,
     download_model( types=wtypes, areas=areas, name=ecmwf, yyyymmdd=yyyymmdd,
-                    run=run, start_time=0, step_time=6, end_time=120 )
+                    run=run, start_time=0, step_time=6, end_time=120, verbose )
     download_model( types=wtypes, areas=areas, name=ecmwf, yyyymmdd=yyyymmdd,
-                    run=run, start_time=120, step_time=6, end_time=240 )
+                    run=run, start_time=120, step_time=6, end_time=240, verbose )
 
-def download_daily():
+def download_daily(verbose=None):
     '''Function downloads daily several models at different times'''
     while True: # Eternal loop
         # Download models run 00, 12, 18 at given times
@@ -209,16 +211,16 @@ def download_daily():
 
             # ICON, first
             util.pause( stime, wait_date, f'download model run {run} ICON at' )
-            download_model_icon_eu(model_date, run)
+            download_model_icon_eu(model_date, run, verbose)
 
             # GFS, one hour later
             util.pause( gfs_time, wait_date, f'download model run {run} GFS at' )
-            download_model_gfs(model_date, run)
+            download_model_gfs(model_date, run, verbose)
 
             # ECMWF, only 00 and 12 run and three hours later
             if run in ['00','12']:
                 util.pause( ecm_time, wait_date, f'download model run {run} ECMWF at' )
-                download_model_ec(model_date, run)
+                download_model_ec(model_date, run, verbose)
 
 
 if __name__ == "__main__":
@@ -245,7 +247,7 @@ if __name__ == "__main__":
     #     date_submap     = True,        # Set True to create extra date submaps
     #     date_subname    = True,        # Set True to add date in filename
     #     check           = True,        # No double downloads check
-    #     verbose         = True         # Overwrite verbose -> see config.py
+    #     verbose         = None         # Overwrite verbose -> see config.py
     # )
 
     dnow = ymd.yyyymmdd_now()
@@ -256,7 +258,7 @@ if __name__ == "__main__":
     # snowdepth
 
     # model( gfs, snowdepth, low_countries,  dnow, run,   0, 1,  60, 0.7 )
-    model( gfs, snowdepth, low_countries,  dnow, run,  192, 3, 384, 0.7 )
+    model( gfs, snowdepth, low_countries,  dnow, run,  192, 3, 384, 0.7, True )
 
     ############################################################################
     # Example daily repeating download_

@@ -13,6 +13,7 @@ import view.txt as txt
 import model.util as util
 
 question_mark = '\n  ?  '
+ln = lambda t: '\n' if t else ''
 
 def question(t='', spacer=True):
     t = f'{t}{question_mark}'
@@ -29,14 +30,16 @@ def not_empty( t = '' ):
             break
     return answ
 
-def is_quit( t = 'Press "q" to quit the programm' ):
+def is_quit( t = '' ):
+    t = f'{t}{ln(t)}Press "q" to quit the programm'
     answ = not_empty(t).lower()
     if answ in txt.quit:
         return True
     else:
         return False
 
-def exit( t = 'Press "q" to exit the programm' ):
+def exit( t = '' ):
+    t = f'{t}{ln(t)}Press "q" to exit the programm'
     if is_quit(t):
         exit(0)
 
@@ -47,35 +50,37 @@ def open_with_app(path, verbose=False):
     if is_yess(t):
         util.open_file_with_app(path, verbose)
 
-def yess_or_no( t='' ):
+def yess_or_no(t='')
+    t = f'{t}{ln(t)}Type in "y" for yess or "n" for no'
     while True:
-        answ = not_empty(t).lower()
+        answ = question(t).lower()
         if answ in txt.yess:
             return answ
         elif answ in txt.no:
             return answ
         else:
-            cnsl.log('Type in "y" for yess or "n" for no\n', True)
+            cnsl.log('Type in an "y" or "n"', True)
 
 def is_yess( t=''):
-    ln = '\n' if t else ''
-    answ = not_empty(f'{t}{ln}Press a key to continue or press "y" for yess').lower()
-    if answ in txt.yess:
+    t = f'{t}{ln(t)}Press a key to continue or press "y" for yess'
+    answ = question()
+    if answ.lower() in txt.yess:
         return True
     else:
         return False
 
 def is_no( t='' ):
-    ln = '\n' if t else ''
-    answ = not_empty(f'{t}{ln}Press a key to continue or press "n" for no').lower()
-    if answ in txt.no:
+    t = f'{t}{ln(t)}Press a key to continue or press "n" for no'
+    answ = question(t)
+    if answ.lower() in txt.no:
         return True
     else:
         return False
 
-def number( t='Give a number'):
+def number( t='' ):
+    t = f'{t}{ln(t)}Give a number'
     while True:
-        answ = not_empty( t )
+        answ = question( t )
         if answ.isdigit():
             return answ
         else:
@@ -89,13 +94,16 @@ def letter( t='Give a letter from a..z'):
         else:
             cnsl.log(f'Please type in a letter', True)
 
-def continue_on(t='Press a key to continue'):
+def continue_on(t=''):
+    t = f'{t}{ln(t)}Press a key to continue'
     question(t)
 
-def pause(t='Programm paused. Press a key to continue'):
+def pause(t=''):
+    t = f'{t}{ln(t)}Programm paused, press a key to continue'
     question(t)
 
-def continue_or_quit( t='Press a key to continue or press "q" to quit' ):
+def continue_or_quit( t='' ):
+    t = f'{t}{ln(t)}Press a key to continue or press "q" to quit'
     if question(t) in txt.quit:
         exit(0)
     return True

@@ -13,9 +13,9 @@ import model.ymd as ymd
 import view.console as cnsl
 from PIL import Image
 
-def image(path, verbose=False):
+def image(path, verbose=None):
     '''Function validates an image'''
-    ok, verbose = False, cnsl.verbose(verbose)
+    ok = False
     cnsl.log(f'Start validate image at {ymd.now()}', verbose)
     cnsl.log(f'Image {path}', verbose)
     try:
@@ -35,7 +35,7 @@ def image(path, verbose=False):
     cnsl.log(f'End validate image', verbose)
     return ok
 
-def image_corrupt(path, verbose=False):
+def image_corrupt(path, verbose=None):
     '''Function checks is a file is corrupt returns True if it is else False'''
     corrupt = False
     try: Image.open(path).verify() # Open and verify
@@ -79,10 +79,10 @@ def date( dt ):
 
 def yyyymmdd(
         yyyymmdd, # Date
-        verbose = False
+        verbose = None
     ):
     '''Function validates a date with format yyyymmdd for existence'''
-    ok, verbose, symd = False, cnsl.verbose(verbose), str(yyyymmdd)
+    ok, symd = False, str(yyyymmdd)
     cnsl.log(f'Start validate date at {ymd.now()}', verbose)
     cnsl.log(f'Date - {symd} - format <yyyymmdd>', verbose)
     if len(symd) != 8:

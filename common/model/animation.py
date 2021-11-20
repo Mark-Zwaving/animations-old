@@ -26,10 +26,10 @@ def create(
         lst          = [],  # List with all the images for the animation
         path         = '',   # File path for the animation image
         interval     = 0.7,  # Interval time for the image
-        verbose      = False  # Optional overwrite default value verbose -> see config.py
+        verbose      = None # Optional overwrite default value verbose -> see config.py
     ):
     '''Function create an anmiation file, using python library imageio'''
-    ok, verbose = False, cnsl.verbose(verbose)
+    ok = False
     cnsl.log(f'Start make animation {ymd.now()}', verbose)
     cnsl.log(f'Animation interval time is {interval} seconds', verbose)
     if lst:
@@ -78,11 +78,11 @@ def interval_download_animation(
         date_submap       = True,  # Set True to create extra date submaps
         date_subname      = True,  # Set True to create extra date in files
         check             = True,  # No double downloads check
-        verbose           = False  # With output to screen
+        verbose           = None  # With output to screen
     ):
     '''Function downloads images for a given time and creates a animation from
        the downloaded images'''
-    ok, verbose = False, cnsl.verbose(verbose)
+    ok = False
     cnsl.log(f'Start interval download and make an animation {ymd.now()}', verbose)
     cnsl.log(f'Url is {download_url}', verbose)
     cnsl.log(f'Download interval {interval_download} minutes', verbose)

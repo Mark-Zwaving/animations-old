@@ -60,7 +60,7 @@ if ok: ask.open_with_app(path)
 #     url,  # Url to download
 #     path, # Path to download the file to
 #     check   = True,  # <optional> Check file True will not overwrite the file if exists
-#     verbose = False  # <optional> Overwrite default value verbose -> see config.py
+#     verbose = None  # <optional> Overwrite default value verbose -> see config.py
 # )
 # Return: <boolean> ok (True or False)
 # Code example
@@ -90,7 +90,7 @@ fio.download(url, path, check, verbose)
 #     hh_mm_ss,      # Time with format <HH:MM:SS> to pause untill to.
 #     yyyymmdd = '', # <optional> Date to start. Format <yyyymmdd> If omitted current date will be used.
 #     output   = 'programm will continue at', # <optional> Output text second substring
-#     verbose = False # <optional> overwrite default value verbose -> see config.py
+#     verbose = None # <optional> overwrite default value verbose -> see config.py
 # )
 # Source: common.model.util
 # Code example
@@ -122,7 +122,7 @@ cnsl.log('Happy New Year !', True)
 #     date_submap   = False, # Set True to the possible given date submaps
 #     date_subname  = False, # Add date and time to downloaded files
 #     check         = True,  # No double downloads check
-#     verbose       = False  # With output to screen
+#     verbose       = None  # With output to screen
 # )
 # Source: common.model.fio
 # Return: path<list>

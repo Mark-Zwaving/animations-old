@@ -31,11 +31,10 @@ def pause(
         hh_mm_ss,  # Time with format <HH:MM:SS> to pause untill to.
         yyyymmdd = '',  # <optional> Date to start. Format <yyyymmdd> If omitted current date will be used.
         output = 'programm will continue at',  # <optional> Output text second substring
-        verbose = False  # <optional> Overwrite default value verbose -> see config.py
+        verbose = None  # <optional> Overwrite default value verbose -> see config.py
     ):
     '''Functions pauses execution of programm untill a certain date and time is
        reached and then continues the executing of the programm.'''
-    verbose = cnsl.verbose(verbose)
     cnsl.log(f'Start pause programm at {ymd.now()}', verbose)
     # Check if there is a time anyway
     if not hh_mm_ss: return # We dont need to wait
@@ -111,13 +110,12 @@ def process_time(t='', delta_sec = 0):
 def time_passed(
         start_time,
         t = 'Time passed',
-        verbose = False
+        verbose = None
     ):
-    verbose = cnsl.verbose(verbose)
     ts = process_time(delta_sec=time.time()-start_time)
     cnsl.log(f'{t} {ts}', verbose)
 
-def app_time( verbose = False ):
+def app_time( verbose = None ):
     '''Function shows total time app is active from the start'''
     time_passed( cfg.app_start_time, 'Total time app active is', verbose )
 
@@ -157,7 +155,7 @@ def fisher_yates_shuffle_lst(lst, level=1):
 # Function compresses a gif image
 def compress_gif(
         path, # Name of image to compress
-        verbose=False
+        verbose=None
     ):
     '''Function compressess a gif image.
        Python libraries used: pygifsicle, imageio
@@ -167,7 +165,7 @@ def compress_gif(
        Instal gifsicle on your OS too
        Example linux debian: install command: sudo apt-get install gifsicle
        '''
-    ok, verbose = False, cnsl.verbose(verbose)
+    ok = False
     cnsl.log(f'Start compress file {ymd.now()}', verbose)
 
     if os.path.isfile(path):
@@ -196,9 +194,9 @@ def compress_gif(
     cnsl.log('End compress file', verbose)
     return ok
 
-def open_file_with_app(fname, verbose=False):
+def open_file_with_app(fname, verbose=None):
     '''Function opens a file with an default application'''
-    ok, verbose, err = False, cnsl.verbose(verbose), ''
+    ok, err = False, ''
     cnsl.log(f'Start open file with an app {ymd.now()}', verbose)
 
     if fio.check(fname, verbose):

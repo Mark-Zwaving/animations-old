@@ -43,10 +43,10 @@ def daily_interval_knmi_10min(
         remove_download   = False, # <optional> Remove the downloaded images
         gif_compress      = True,  # <optional> Compress the size of the animation
         date_submap       = True,  # <optional> Set True to create extra date submaps
-        verbose           = False  # <optional> Output to screen
+        verbose           = None  # <optional> Overwrite verbose -> see config.py
     ):
     '''Function handles repetative daily downloads and makes the animations'''
-    ok, verbose, st = False, cnsl.verbose(verbose), time.time()
+    ok, st = False, time.time()
     web_name = util.url_name(download_url)
     cnsl.log(f'Start {web_name} daily interval download {ymd.now()}', verbose)
 
@@ -102,7 +102,7 @@ if __name__ == "__main__":
     #     gif_compress      = True,  # Compress the size of the animation
     #     date_submap       = True,  # Set True to create extra date submaps
     #     date_subname      = True,  # Set True to create extra date in files
-    #     verbose           = False  # With output to screen
+    #     verbose           = None  # Overwrite verbose -> see config.py
     # )
 
     ############################################################################

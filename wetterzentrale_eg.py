@@ -84,12 +84,12 @@ def model(
         date_submap      = True,  # Set True to create extra date submaps
         date_subname     = True,  # Set True to create extra date in files
         check            = True,  # No double downloads check
-        verbose          = False  # With output to screen
+        verbose          = None   # Overwerite default verbose -> see config.py
     ):
     '''Function creates and saves a gif animation based on weather model output
        type and time options. Data is from wetterzentrale.de'''
 
-    ok, verbose, st = False, cnsl.verbose(verbose), time.time()
+    ok, st = False, time.time()
     web_name = util.url_name(base_url)
     cnsl.log(f'Start {web_name} animation {ymd.now()}', verbose)
 

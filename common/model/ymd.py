@@ -207,9 +207,9 @@ def yyymmdd_previous_week( yyyymmdd = '' ):
     '''Get date of previous week in format <yyyymmdd>'''
     return yyyymmdd_minus_week(yyyymmdd, 1)
 
-def yyyymmdd_range_lst(ymds, ymde, verbose=False): # Probably slow fn
+def yyyymmdd_range_lst(ymds, ymde, verbose=None): # Probably slow fn
     '''Function makes a ordered list of dates with format yyyymmdd'''
-    ok, verbose = False, cnsl.verbose(verbose)
+    ok = False
     cnsl.log(f'Start make a range date list {now()}', verbose)
     cnsl.log(f'From {ymds} to {ymde}', verbose)
     res, iymds, iymde = [], int(ymds), int(ymde) # Make int to compare

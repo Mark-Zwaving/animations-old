@@ -15,38 +15,55 @@ import model.ymd as ymd
 
 ################################################################################
 # Functions handling outputs to screen or log
+def process(
+        s,            # String to print on the screen
+        verbose=None,  # If set to True it always prints on a screen
+        log=None,     # Overwrite default log
+        debug=None    # Overwrite default debug
+    ):
+    '''Function processes logging processes'''
+    if always == None: # No overwrite, use default
+        if config.verbose:
+            print(s)
+    elif verbose: # Overwrite default config
+        print(s)
+
+    if debug == None: # No overwrite, use default
+        if config.debug: # Debug modus
+            input(s)
+    elif debug:
+        input(s)
+
+    # Write log if selected
+    if log == None:  # No overwrite, use default
+        if config.log:
+            write_log(f'{s}\n')
+    elif log:
+        write_log(f'{s}\n')
+
+
 def log(
         s,            # String to print on the screen
-        always=False  # If set to True it always prints on a screen
+        verbose=None,  # If set to True it always prints on a screen
+        log=None,     # Overwrite default log
+        debug=None    # Overwrite default debug
     ):
     '''Function shows output sstring (s) on screen based on variable verbose and debug.
        Output always to screen, set variable always to True.
        If debug set to True it wait for keypress to move on.'''
     s = str(s)
-    if config.debug: # Debug modus
-        input(s)
-    elif config.verbose or always: # Verbose modus
-        print(s)
+    process( s, verbose, log, debug )
 
-    # Write log if selected
-    if config.log:
-        write_log(s)
 
 def log_r(
         s,            # String to print on the screen
-        always=False  # If set to True it always prints on a screen
+        always=None  # If set to True it always prints on a screen
     ):
     '''Function shows output string (s) --- on the same line --- based on the
        variable verbose. Output always to screen, set variable always to True.'''
     s = f'\r{s}'
-    if config.debug: # Debug modus
-        input(s) # untested
-    elif config.verbose or always:
-        print(s, end='')
+    process( s, verbose, log, debug )
 
-    # Write log if selected
-    if config.log:
-        write_log(s)
 
 def write_log(s):
     '''Function writes a log from console output'''

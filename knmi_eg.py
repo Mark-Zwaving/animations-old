@@ -114,15 +114,15 @@ if __name__ == "__main__":
 
     daily_interval_knmi_10min(
         url_temperature,  # Fill in download image url
-        start_time        = '15:32:00', # Start time to download an image (every day)
-        duration          = 1*10,  # Time to download images
-        interval          = 10,    # Interval time for downloading Images (minutes)
+        start_time        = '20:09:40', # Start time to download an image (every day)
+        duration          = 12*60,  # Time to download images
+        interval          = 10,     # Interval time for downloading Images (minutes)
         start_date        = ymd.yyyymmdd_now(), # <optional> Start date for downloading images format yyyymmdd
-        stop_date         = '',    # <optional> Give an end date format: yyyymmdd
+        stop_date         = '',     # <optional> Give an end date format: yyyymmdd
         download_map      = cfg.dir_download,  # <optional> Map for downloading the images too
         animation_map     = cfg.dir_animation, # <optional> Map for the animations
         animation_name    = '',    # <optional> The path/name of the animation file
-        animation_time    = 0.7,   # <optional> Animation interval time for gif animation
+        animation_time    = 0.5,   # <optional> Animation interval time for gif animation
         remove_download   = False, # <optional> Remove the downloaded images
         gif_compress      = True,  # <optional> Compress the size of the animation
         date_submap       = True,  # <optional> Set True to create extra date submaps

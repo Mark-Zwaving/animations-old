@@ -50,7 +50,7 @@ def open_with_app(path, verbose=False):
     if is_yess(t):
         util.open_file_with_app(path, verbose)
 
-def yess_or_no(t='')
+def yess_or_no(t=''):
     t = f'{t}{ln(t)}Type in "y" for yess or "n" for no'
     while True:
         answ = question(t).lower()

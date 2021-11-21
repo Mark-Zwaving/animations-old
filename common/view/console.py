@@ -22,7 +22,7 @@ def process(
         debug=None    # Overwrite default debug
     ):
     '''Function processes logging processes'''
-    if always == None: # No overwrite, use default
+    if verbose == None: # No overwrite, use default
         if config.verbose:
             print(s)
     elif verbose: # Overwrite default config
@@ -37,9 +37,9 @@ def process(
     # Write log if selected
     if log == None:  # No overwrite, use default
         if config.log:
-            write_log(f'{s}\n')
+            write_log(s)
     elif log:
-        write_log(f'{s}\n')
+        write_log(s)
 
 
 def log(
@@ -57,12 +57,32 @@ def log(
 
 def log_r(
         s,            # String to print on the screen
-        always=None  # If set to True it always prints on a screen
+        verbose=None,  # If set to True it always prints on a screen
+        log=None,      #
+        debug=None
     ):
     '''Function shows output string (s) --- on the same line --- based on the
        variable verbose. Output always to screen, set variable always to True.'''
     s = f'\r{s}'
-    process( s, verbose, log, debug )
+
+    if verbose == None: # No overwrite, use default
+        if config.verbose:
+            print(s, end='')
+    elif verbose: # Overwrite default config
+        print(s, end='')
+
+    if debug == None: # No overwrite, use default
+        if config.debug: # Debug modus
+            input(s)
+    elif debug:
+        input(s)
+
+    # Write log if selected
+    if log == None:  # No overwrite, use default
+        if config.log:
+            write_log(s)
+    elif log:
+        write_log(s)
 
 
 def write_log(s):

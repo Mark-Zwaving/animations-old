@@ -151,7 +151,7 @@ def download_model( types, # List of weathertypes -> overview, tmep2meter
                     run,           # Time of model run
                     start_time,    # Start time of run
                     step_time,     # Interval time of run
-                    end_time       # End time of run
+                    end_time,       # End time of run
                     verbose = None  # overwerite default verbose
     ):
     '''Function downloads from optoins lists with weather types and areas all
@@ -160,36 +160,36 @@ def download_model( types, # List of weathertypes -> overview, tmep2meter
         for area in areas: # Which areas
             model( name=name, option=option, area=area, run=run, yyyymmdd=yyyymmdd,
                    start_time=start_time, step_time=step_time, end_time=end_time,
-                    verbose )
+                   verbose=verbose )
 
 def download_model_icon_eu(yyyymmdd, run, verbose=None):
     '''Function downloads model icon with several options'''
     wtypes = [overview, temp2meter, snowdepth] # ,sum_precip, wind10m, hPa850, winterview, snowdepth
     areas  = [europe, benelux]
     download_model( types=wtypes, areas=areas, name=icon_eu, yyyymmdd=yyyymmdd,
-                    run=run, start_time=0, step_time=3, end_time=60, verbose )
+                    run=run, start_time=0, step_time=3, end_time=60, verbose=verbose )
     download_model( types=wtypes, areas=areas, name=icon_eu, yyyymmdd=yyyymmdd,
-                    run=run, start_time=60, step_time=3, end_time=120, verbose )
+                    run=run, start_time=60, step_time=3, end_time=120, verbose=verbose )
 
 def download_model_gfs(yyyymmdd, run, verbose=None):
     '''Function downloads model gfs with several options'''
     wtypes = [overview, temp2meter, snowdepth] #, sum_precip, wind10m, hPa850, winterview, snowdepth
     areas  = [europe_atlantic, benelux] # europe
     download_model( types=wtypes, areas=areas, name=gfs, yyyymmdd=yyyymmdd,
-                    run=run, start_time=0, step_time=6, end_time=120, verbose )
+                    run=run, start_time=0, step_time=6, end_time=120, verbose=verbose )
     download_model( types=wtypes, areas=areas, name=gfs, yyyymmdd=yyyymmdd,
-                    run=run, start_time=120, step_time=6, end_time=240, verbose )
+                    run=run, start_time=120, step_time=6, end_time=240, verbose=verbose )
     download_model( types=wtypes, areas=areas, name=gfs, yyyymmdd=yyyymmdd,
-                    run=run, start_time=240, step_time=6, end_time=360, verbose )
+                    run=run, start_time=240, step_time=6, end_time=360, verbose=verbose )
 
 def download_model_ec(yyyymmdd, run, verbose=None):
     '''Function downloads model ecmwf with seceral options'''
     wtypes = [overview, temp2meter, snowdepth] #, sum_precip, wind10m, hPa850 , winterview, snowdepth
     areas  = [europe_atlantic, benelux] # europe,
     download_model( types=wtypes, areas=areas, name=ecmwf, yyyymmdd=yyyymmdd,
-                    run=run, start_time=0, step_time=6, end_time=120, verbose )
+                    run=run, start_time=0, step_time=6, end_time=120, verbose=verbose )
     download_model( types=wtypes, areas=areas, name=ecmwf, yyyymmdd=yyyymmdd,
-                    run=run, start_time=120, step_time=6, end_time=240, verbose )
+                    run=run, start_time=120, step_time=6, end_time=240, verbose=verbose )
 
 def download_daily(verbose=None):
     '''Function downloads daily several models at different times'''
@@ -258,7 +258,7 @@ if __name__ == "__main__":
     # snowdepth
 
     # model( gfs, snowdepth, low_countries,  dnow, run,   0, 1,  60, 0.7 )
-    model( gfs, snowdepth, low_countries,  dnow, run,  192, 3, 384, 0.7, True )
+    model( gfs, snowdepth, low_countries,  dnow, run,  120, 3, 240, 0.5, verbose=True )
 
     ############################################################################
     # Example daily repeating download_

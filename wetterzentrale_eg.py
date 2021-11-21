@@ -217,7 +217,7 @@ if __name__ == "__main__":
 
     ############################################################################
     # Examples model animations
-    daily_processes()
+    #daily_processes()
 
     ############################################################################
     # Function model
@@ -244,10 +244,10 @@ if __name__ == "__main__":
 
     ############################################################################
     # Examples models
-    # run, dm, am = '06', cfg.dir_download, cfg.dir_animation # Base maps (shortened)
-    # iv, rm, cp, ds, dn, ck, vb = 0.7, False, True, True, True, True, True
-    # model( gfs,      'snow_cover',        'OP', 'ME', run, 180,  3, 384, dm, am, iv, rm, cp, ds, dn, ck, vb )
-    # model( gfs,      'hpa500',            'OP', 'EU', run,   0,  1,  92, dm, am, iv, rm, cp, ds, dn, ck, vb )
+    run, dm, am = '12', cfg.dir_download, cfg.dir_animation # Base maps (shortened)
+    iv, rm, cp, ds, dn, ck, vb = 0.7, False, True, True, True, True, True
+    model( gfs,      'snow_cover',        'OP', 'ME', run, 120,  1, 288, dm, am, iv, rm, cp, ds, dn, ck, vb )
+    model( gfs,      'hpa500',            'OP', 'EU', run, 96,  1, 288, dm, am, iv, rm, cp, ds, dn, ck, vb )
     # model( gfs,      'hpa500',            'OP', 'EU', run,  92,  1, 288, dm, am, iv, rm, cp, ds, dn, ck, vb )
     # model( gfs,      'hpa500',            'OP', 'EU', run, 288,  3, 384, dm, am, iv, rm, cp, ds, dn, ck, vb )
     # model( gfs,      'hpa500',            'OP', 'EU', run,   0,  1,  96, dm, am, iv, rm, cp, ds, dn, ck, vb )

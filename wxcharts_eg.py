@@ -70,14 +70,15 @@ def model(
         start_time      = 0,           # Start image
         step_time       = 3,           # Step image
         end_time        = 384,         # End image
-        animation_time  = 0.7,         # Animation interval time for gif animation
         download_map    = cfg.dir_download,  # Map for downloading the images too
         animation_map   = cfg.dir_animation, # Map for the animations
+        animation_time  = 0.7,         # Animation interval time for gif animation
         remove_download = False,       # Remove the downloaded images
         gif_compress    = True,        # Compress the size of the animation
         date_submap     = True,        # Set True to create extra date submaps
         date_subname    = True,        # Set True to add a date in the filename
         check           = True,        # No double downloads check
+        with_animation  = True,        # Make an animation
         verbose         = None         # Overwrite verbose -> see config.py
     ):
     '''Function creates and saves a gif animation based on weather model output
@@ -110,32 +111,33 @@ def model(
         # Download all images from an uries list
         uries, paths = fio.download_lst(uries, paths, check, verbose)
 
-        # Animation map
-        if date_submap: # Update animation map with dates
-            y, m, d, hh, mm, ss = ymd.y_m_d_h_m_s_now()
-            animation_map = util.mk_path(animation_map, f'{y}/{m}/{d}')
-        animation_map = util.mk_path(animation_map, sub_map)
+        if with_animation:
+            # Animation map
+            if date_submap: # Update animation map with dates
+                y, m, d, hh, mm, ss = ymd.y_m_d_h_m_s_now()
+                animation_map = util.mk_path(animation_map, f'{y}/{m}/{d}')
+            animation_map = util.mk_path(animation_map, sub_map)
 
-        # Animation file
-        fname = f'{web_name}_{name}_{area}_{option}_{run}_{start_time:0>3}-{end_time:0>3}'
-        if date_submap: # Add date to file name
-            y, m, d, hh, mm, ss = ymd.y_m_d_h_m_s_now()
-            fname = f'{fname}_{y}-{m}-{d}_{hh}-{mm}-{ss}'
+            # Animation file
+            fname = f'{web_name}_{name}_{area}_{option}_{run}_{start_time:0>3}-{end_time:0>3}'
+            if date_submap: # Add date to file name
+                y, m, d, hh, mm, ss = ymd.y_m_d_h_m_s_now()
+                fname = f'{fname}_{y}-{m}-{d}_{hh}-{mm}-{ss}'
 
-        # Animation path
-        path = util.mk_path( animation_map, f'{fname}.gif'.lower() )
+            # Animation path
+            path = util.mk_path( animation_map, f'{fname}.gif'.lower() )
 
-        # Create animation file
-        ok = anim.create(paths, path, animation_time, verbose)
+            # Create animation file
+            ok = anim.create(paths, path, animation_time, verbose)
 
-        # Compress animation
-        if ok and gif_compress: util.compress_gif(path, verbose)
+            # Compress animation
+            if ok and gif_compress: util.compress_gif(path, verbose)
 
-        # Remove downloaded images
-        if remove_download: fio.rm_lst(paths)
+            # Remove downloaded images
+            if remove_download: fio.rm_lst(paths)
 
-        # Open file with a default app
-        # ask.open_with_app(path)
+            # Open file with a default app
+            # ask.open_with_app(path)
     else:
         cnsl.log(f'Error in date {yyyymmdd}', cfg.error)
 
@@ -239,26 +241,50 @@ if __name__ == "__main__":
     #     start_time      = 0,           # Start image
     #     step_time       = 1,           # Step image
     #     end_time        = 384,         # End image
-    #     animation_time  = 0.7,         # Animation interval time for gif animation
     #     download_map    = cfg.dir_download,  # Map for downloading the images too
     #     animation_map   = cfg.dir_animation, # Map for the animations
+    #     animation_time  = 0.7,         # Animation interval time for gif animation
     #     remove_download = False,       # Remove the downloaded images
     #     gif_compress    = True,        # Compress the size of the animation
     #     date_submap     = True,        # Set True to create extra date submaps
     #     date_subname    = True,        # Set True to add date in filename
     #     check           = True,        # No double downloads check
+    #     with_animation  = True,        # Make an animation
     #     verbose         = None         # Overwrite verbose -> see config.py
     # )
 
-    dnow = ymd.yyyymmdd_now()
-    run = '12'
-    # model( icon_eu, overview, europe,  dnow, run,   0, 1,  60, 0.7 )
-    # model( icon_eu, overview, europe,  dnow, run,  60, 1, 120, 0.7 )
-    # model( icon_eu, temp2meter, benelux, dnow, run,   0, 1, 120, 0.7 )
-    # snowdepth
+    # overview   = 'overview'
+    # winterview = 'winteroverview'
+    # hPa850     = '850temp'
+    # temp2meter = '2mtemp'
+    # snowdepth  = 'snowdepth'
+    # wind10m    = 'wind10mkph'
+    # sum_precip = 'accprecip'
 
-    # model( gfs, snowdepth, low_countries,  dnow, run,   0, 1,  60, 0.7 )
-    model( gfs, snowdepth, low_countries,  dnow, run,  120, 3, 240, 0.5, verbose=True )
+    # nord_west_europe = 'nweurope'
+    # nord_east_europe = 'neeurope'
+    # europe_atlantic  = 'euratl'
+    # europe           = 'europe'
+    # germany          = 'germany'
+    # benelux = low_countries = 'low_countries'
+
+    # Examples models
+    # Run, download_map, animation_map
+    run, dm, am = '06', cfg.dir_download, cfg.dir_animation # Base maps (shortened)
+    # Options: gif_interval, remove_download, gif_compress, date_map, date_name,
+    # download_check, with_animation, verbose
+    iv, rm, cp, ds, dn, ck, wa, vb = 0.7, False, True, True, True, True, True, True
+    dnow = ymd.yyyymmdd_now()
+    # model( icon_eu, overview,   europe,          dnow, run,    0, 1,  60, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
+    # model( icon_eu, overview,   europe,          dnow, run,   60, 1, 120, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
+    # model( icon_eu, temp2meter, benelux,         dnow, run,    0, 1, 120, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
+    # model(     gfs, snowdepth,  low_countries,   dnow, run,    0, 1,  60, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
+    # model(     gfs, snowdepth,  low_countries,   dnow, run,   42, 1, 168, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
+    # model(   ecmwf, snowdepth,  low_countries,   dnow, run,   54, 1, 144, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
+    # model(   ecmwf, temp2meter, low_countries,   dnow, run,   54, 1, 144, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
+    # model(   ecmwf, hPa850,     europe_atlantic, dnow, run,   54, 1, 144, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
+    # model(   ecmwf, winterview, europe_atlantic, dnow, run,   54, 1, 144, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
+    # model(   ecmwf, overview,  'nweurope',       dnow, run,  144, 1, 240, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
 
     ############################################################################
     # Example daily repeating download_

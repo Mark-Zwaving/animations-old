@@ -28,8 +28,8 @@ dir_images    = os.path.join(dir_app, 'images')
 dir_www       = os.path.abspath('/var/www/html/weather/images') # Webserver
 dir_up        = os.path.dirname(dir_app)
 dir_log       = os.path.join(dir_up, 'logs')
-dir_download  = os.path.join(dir_www, 'download')
-dir_animation = os.path.join(dir_www, 'animation')
+dir_download  = os.path.join(dir_up, 'download')
+dir_animation = os.path.join(dir_up, 'animation')
 # dir_download  = os.path.join(dir_app, 'download')
 # dir_animation = os.path.join(dir_app, 'animation')
 

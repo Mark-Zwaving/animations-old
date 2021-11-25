@@ -248,5 +248,4 @@ def open_file_with_app(fname, verbose=None):
 
     if ok: cnsl.log('Open file with an app successfull', verbose)
     else: cnsl.log(f'Error open file with an app\n{err}', cfg.error)
-    cnsl.log('End open file with an app', verbose)
     return ok

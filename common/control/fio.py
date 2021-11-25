@@ -33,7 +33,6 @@ def check(fname, verbose=False):
                 cnsl.log('File exists', verbose)
             else:
                 cnsl.log('File does not exist', verbose)
-    cnsl.log('End check file', verbose)
     return ok
 
 def write(path='dummy.txt', content='', prefix='w', encoding='utf-8', verbose=False):
@@ -51,7 +50,6 @@ def write(path='dummy.txt', content='', prefix='w', encoding='utf-8', verbose=Fa
         else:
             cnsl.log('Write file success', verbose)
             ok = True
-    cnsl.log(f'End write a file', verbose)
     return ok
 
 def save(fname='dummy.txt', content='', prefix='w', encoding='utf-8', verbose=False):
@@ -73,7 +71,6 @@ def read(fname, verbose=False):
             else:
                 cnsl.log('Read file success', verbose)
                 ok = True
-    cnsl.log('End read a file', verbose)
     return ok, t
 
 def delete(fname, verbose=False):
@@ -92,7 +89,6 @@ def delete(fname, verbose=False):
                 ok = True
         else:
             cnsl.log(f'Cannot delete. File does not exist', verbose)
-    cnsl.log('End delete a file', verbose)
     return ok
 
 def rm_file(fname, verbose=False):
@@ -115,7 +111,6 @@ def rm_files_from_lst( lst = [], empty_dir=True, verbose=False):
                     map = os.path.dirname(map) # Go to upper dir
                 else:
                     break
-    cnsl.log('End remove files from list', verbose)
 
 def mk_dir(path, verbose=False):
     '''Function makes a map if not already exists'''
@@ -134,7 +129,6 @@ def mk_dir(path, verbose=False):
         else:
             cnsl.log('Make directory success', verbose)
             ok = True
-    cnsl.log(f'End make a directory', verbose)
     return ok
 
 # Function removes a map, empthy or not
@@ -157,7 +151,6 @@ def rm_dir(
                 ok = True
         else:
             cnsl.log('Cannot remove map. Map does not exist.', verbose)
-    cnsl.log('End remove a directory', verbose)
     return ok
 
 def is_dir_empthy(dir, verbose=False):
@@ -168,7 +161,6 @@ def is_dir_empthy(dir, verbose=False):
     else:
         cnsl.log('Map does not exist.', verbose)
         ok = True
-    cnsl.log('End check for an empty map', verbose)
     return ok
 
 def unzip(zip, txt, verbose=False):
@@ -186,7 +178,6 @@ def unzip(zip, txt, verbose=False):
         else:
             cnsl.log('Unzip success', verbose)
             ok = True
-    cnsl.log('End unzip a file', verbose)
     return ok
 
 def download(
@@ -220,8 +211,6 @@ def download(
         # Do not flood server protection
         wait = cfg.download_interval_time
         time.sleep(0.2 if wait < 0.2 else wait)
-
-    cnsl.log(f'End download a file', verbose)
     return ok
 
 def download_read_file(url, file, verbose=False):
@@ -234,7 +223,6 @@ def download_read_file(url, file, verbose=False):
     else:
         t = 'Cannot download file. There is no internet connection'
         console.log(t, cfg.error)
-    cnsl.log('End download and read a file', verbose)
     return ok, t
 
 def request(url, type='txt', verbose=False):
@@ -257,7 +245,6 @@ def request(url, type='txt', verbose=False):
         else:
             cnsl.log('Request success', verbose)
             ok = True
-    cnsl.log('End request from an url', verbose)
     return ok, t
 
 def request_text(url, verbose=False):
@@ -282,7 +269,6 @@ def has_internet(verbose=False):
         else:
             cnsl.log('Check succes', verbose)
             ok = True
-    cnsl.log('End check internet connection', verbose)
     return ok
 
 # Function checks if a url exists
@@ -299,7 +285,6 @@ def url_exists(url, verbose=False):
         else:
             cnsl.log('Url exists', verbose)
             ok = True
-    cnsl.log('End check internet connection', verbose)
     return ok
 
 # Function get files in a dir. Filering can be done based on keywords and extenions
@@ -375,8 +360,6 @@ def file_lst(
                 p = util.mk_path(map, f)
                 cnsl.log(f'File found {p}', verbose)
                 results.append(p)
-
-    cnsl.log(f'End list files directory', verbose)
     return results
 
 
@@ -468,8 +451,6 @@ def download_interval(
         dt = datetime.datetime.fromtimestamp(time_download + time_interval)
         util.pause( dt.strftime('%H:%M:%S'), dt.strftime('%Y%m%d'),
                     f'next ({num_act}) download {name} at' )
-
-    cnsl.log('End interval download', verbose)
     return lpaths
 
 def rm_lst(lst = [], remove_empty=False, verbose = False):
@@ -483,7 +464,6 @@ def rm_lst(lst = [], remove_empty=False, verbose = False):
             while is_dir_empthy(dir, verbose) and remove_empty:
                 rm_dir(dir, verbose) # Remove empty map
                 dir = os.path.dirname(dir) # Go to upper dir
-    cnsl.log('End remove files from list', verbose)
 
 # Function downloads a list of files uries on the web to a local path list
 def download_lst(
@@ -513,6 +493,4 @@ def download_lst(
                 res_path.append(path)
     else:
         cnsl.log('List uries is empty', verbose)
-
-    cnsl.log('End downloading images from list', verbose)
     return res_urie, res_path # Return correct paths

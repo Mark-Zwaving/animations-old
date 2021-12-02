@@ -270,7 +270,7 @@ if __name__ == "__main__":
 
     # Examples models
     # Run, download_map, animation_map
-    run, dm, am = '06', cfg.dir_download, cfg.dir_animation # Base maps (shortened)
+    run, dm, am = '12', cfg.dir_download, cfg.dir_animation # Base maps (shortened)
     # Options: gif_interval, remove_download, gif_compress, date_map, date_name,
     # download_check, with_animation, verbose
     iv, rm, cp, ds, dn, ck, wa, vb = 0.7, False, True, True, True, True, True, True
@@ -280,7 +280,10 @@ if __name__ == "__main__":
     # model( icon_eu, temp2meter, benelux,         dnow, run,    0, 1, 120, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
     # model(     gfs, snowdepth,  low_countries,   dnow, run,    0, 1,  60, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
     # model(     gfs, snowdepth,  low_countries,   dnow, run,   42, 1, 168, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
-    # model(   ecmwf, snowdepth,  low_countries,   dnow, run,   54, 1, 144, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
+
+    model( gfs, snowdepth,  low_countries,   dnow, run,     24, 1, 108, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
+    # model( icon_eu, snowdepth,  low_countries,   dnow, run,     24, 1, 108, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
+    # model(   ecmwf, snowdepth,  low_countries,   dnow, run,     24, 1, 108, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
     # model(   ecmwf, temp2meter, low_countries,   dnow, run,   54, 1, 144, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
     # model(   ecmwf, hPa850,     europe_atlantic, dnow, run,   54, 1, 144, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
     # model(   ecmwf, winterview, europe_atlantic, dnow, run,   54, 1, 144, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )

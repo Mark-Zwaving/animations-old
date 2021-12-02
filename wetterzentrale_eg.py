@@ -254,9 +254,9 @@ if __name__ == "__main__":
     # model( gfs,      'snow_cover',        'OP', 'ME', run, 120,  1, 288, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
     # model( gfs,      'hpa500',            'OP', 'EU', run, 96,  1, 288, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
 
-    model(har_nl, 'temp2meter', 'OP', 'NL', run, 30,  1, 48, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
-    model(har_nl, 'dewpoint',   'OP', 'NL', run, 30,  1, 48, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
-    model(har_nl, 'snow_cover', 'OP', 'NL', run, 30,  1, 48, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
+    model(gfs, 'temp2meter', 'OP', 'ME', run, 120,  3, 312, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
+    # model(har_nl, 'dewpoint',   'OP', 'NL', run, 30,  1, 48, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
+    # model(har_nl, 'snow_cover', 'OP', 'NL', run, 30,  1, 48, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
 
     # model( gfs,      'hpa500',            'OP', 'EU', run,  92,  1, 288, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
     # model( gfs,      'hpa500',            'OP', 'EU', run, 288,  3, 384, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )

@@ -273,7 +273,7 @@ if __name__ == "__main__":
     run, dm, am = '12', cfg.dir_download, cfg.dir_animation # Base maps (shortened)
     # Options: gif_interval, remove_download, gif_compress, date_map, date_name,
     # download_check, with_animation, verbose
-    iv, rm, cp, ds, dn, ck, wa, vb = 0.7, False, True, True, True, True, True, True
+    iv, rm, cp, ds, dn, ck, wa, vb = 1.2, False, True, True, True, True, True, True
     dnow = ymd.yyyymmdd_now()
     # model( icon_eu, overview,   europe,          dnow, run,    0, 1,  60, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
     # model( icon_eu, overview,   europe,          dnow, run,   60, 1, 120, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
@@ -281,7 +281,15 @@ if __name__ == "__main__":
     # model(     gfs, snowdepth,  low_countries,   dnow, run,    0, 1,  60, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
     # model(     gfs, snowdepth,  low_countries,   dnow, run,   42, 1, 168, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
 
-    model( gfs, snowdepth,  low_countries,   dnow, run,     24, 1, 108, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
+    model( gfs, winterview,  low_countries,   dnow, run,     30, 3, 72, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
+    model( gfs, snowdepth,   low_countries,   dnow, run,     30, 3, 72, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
+    model( gfs, temp2meter,  low_countries,   dnow, run,     30, 3, 72, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
+
+    model( icon_eu, winterview,  low_countries,   dnow, run,     30, 1, 66, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
+    model( icon_eu, snowdepth,   low_countries,   dnow, run,     30, 1, 66, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
+    model( icon_eu, temp2meter,  low_countries,   dnow, run,     30, 1, 66, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
+
+    # model( ecmwf, snowdepth,  low_countries,   dnow, run,     18, 1, 36, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
     # model( icon_eu, snowdepth,  low_countries,   dnow, run,     24, 1, 108, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
     # model(   ecmwf, snowdepth,  low_countries,   dnow, run,     24, 1, 108, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
     # model(   ecmwf, temp2meter, low_countries,   dnow, run,   54, 1, 144, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )

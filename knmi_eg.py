@@ -64,7 +64,7 @@ def daily_interval_knmi_10min(
                 download_url, download_map, animation_map, animation_name, interval,
                 duration, animation_time, remove_download, gif_compress, date_submap,
                 True,  # Date subname always True
-                False, # Dont check on same names (there not be any same names)
+                True,  # Dont download double
                 verbose )
 
         # Make a new correct new date
@@ -114,8 +114,8 @@ if __name__ == "__main__":
 
     daily_interval_knmi_10min(
         url_temperature,  # Fill in download image url
-        start_time        = '20:09:40', # Start time to download an image (every day)
-        duration          = 12*60,  # Time to download images
+        start_time        = '09:29:40', # Start time to download an image (every day)
+        duration          = 10*60,  # Time to download images
         interval          = 10,     # Interval time for downloading Images (minutes)
         start_date        = ymd.yyyymmdd_now(), # <optional> Start date for downloading images format yyyymmdd
         stop_date         = '',     # <optional> Give an end date format: yyyymmdd

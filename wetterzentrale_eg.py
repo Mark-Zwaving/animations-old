@@ -247,14 +247,19 @@ if __name__ == "__main__":
 
     ############################################################################
     # Examples models
-    run, dm, am = '06', cfg.dir_download, cfg.dir_animation # Base maps (shortened)
+    run, dm, am = '00', cfg.dir_download, cfg.dir_animation # Base maps (shortened)
     # Options: gif_interval, remove_download, gif_compress, date_map, date_name,
     # download_check, with_animation, verbose
-    iv, rm, cp, ds, dn, ck, wa, vb = 0.7, False, True, True, True, True, True, True
+    iv, rm, cp, ds, dn, ck, wa, vb = 0.5, False, True, True, True, True, True, True
+    st, dt, et = 40, 1, 102 # Start time, diff time, end time
     # model( gfs,      'snow_cover',        'OP', 'ME', run, 120,  1, 288, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
     # model( gfs,      'hpa500',            'OP', 'EU', run, 96,  1, 288, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
 
-    model(gfs, 'temp2meter', 'OP', 'ME', run, 120,  3, 312, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
+    model(gfs, 'temp2meter', 'OP', 'NL', run, st, dt, et, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
+    model(gfs, 'snow_cover', 'OP', 'NL', run, st, dt, et, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
+    model(gfs, 'precipiation', 'OP', 'NL', run, st, dt, et, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
+
+
     # model(har_nl, 'dewpoint',   'OP', 'NL', run, 30,  1, 48, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
     # model(har_nl, 'snow_cover', 'OP', 'NL', run, 30,  1, 48, dm, am, iv, rm, cp, ds, dn, ck, wa, vb )
 
